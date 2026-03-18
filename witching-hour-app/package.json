@@ -9,14 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.91.0",
-    "ethers": "^6.16.0",
-    "framer-motion": "^12.38.0",
     "next": "16.1.7",
     "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "viem": "^2.47.5",
-    "wagmi": "^3.5.0"
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
