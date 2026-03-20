@@ -1,33 +1,26 @@
-"use client";
+'use client'
 
-import "./globals.css";
-import { WagmiProvider } from "wagmi";
-import { config } from "../lib/wallet";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import './globals.css'
+import '@rainbow-me/rainbowkit/styles.css'
+import { WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { config } from '../lib/wallet'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <nav style={{ padding: "10px", borderBottom: "1px solid #222" }}>
-              <a href="/feed" style={{ marginRight: "10px" }}>Feed</a>
-              <a href="/token">Token</a>
-            </nav>
-
-            <main style={{ padding: "20px" }}>
+            <RainbowKitProvider>
               {children}
-            </main>
+            </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </body>
     </html>
-  );
+  )
 }
