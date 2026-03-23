@@ -1,8 +1,91 @@
+import Link from "next/link";
+
+const infoLinks = [
+  {
+    title: "About",
+    href: "/about",
+    description:
+      "Read the broader Witching Hour frame, public-facing context, and project intent.",
+  },
+  {
+    title: "Access",
+    href: "/access",
+    description:
+      "Open the access path for holders, utilities, gated drops, and participation routes.",
+  },
+] as const;
+
 export default function Token() {
   return (
-    <div>
-      <h2>hOUR Token</h2>
-      <p>Used for tipping and interaction.</p>
-    </div>
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-6 py-12 md:px-10">
+      <section className="grid gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_0_80px_rgba(106,0,255,0.12)] backdrop-blur md:grid-cols-[1.15fr_0.85fr]">
+        <div className="space-y-5">
+          <p className="text-xs uppercase tracking-[0.4em] text-white/50">
+            Witching Hour
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl">
+            hOUR Token
+          </h1>
+          <div className="space-y-4 text-base leading-8 text-white/75">
+            <p>
+              The hOUR token is the on-chain signal layer for tipping,
+              interaction, and future access mechanics across the Witching Hour
+              system.
+            </p>
+            <p>
+              It gives the site a cleaner structure by holding the project
+              context and access paths in one place instead of spreading them
+              across the top-level navigation.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[1.5rem] border border-white/10 bg-black/30 p-6">
+          <p className="text-xs uppercase tracking-[0.35em] text-white/45">
+            Token Notes
+          </p>
+          <dl className="mt-5 space-y-4 text-sm text-white/75">
+            <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <dt className="text-white/45">Role</dt>
+              <dd className="text-right">Tipping and interaction</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <dt className="text-white/45">Network</dt>
+              <dd className="text-right">Base</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-white/45">Position</dt>
+              <dd className="text-right">Utility and access layer</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/45">
+            Inside hOUR Token
+          </p>
+          <h2 className="mt-2 text-2xl font-medium text-white">
+            About and access links
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {infoLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6 transition hover:border-white/20 hover:bg-white/10"
+            >
+              <p className="text-lg font-medium text-white">{item.title}</p>
+              <p className="mt-3 text-sm leading-7 text-white/70">
+                {item.description}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }

@@ -4,12 +4,11 @@ import Link from "next/link";
 const navItems = [
   ["Ritual", "/ritual"],
   ["Sigils", "/sigils"],
-  ["About", "/about"],
+  ["hOUR Token", "/token"],
   ["NFT", "/nft"],
   ["Mint", "/mint"],
   ["Litepaper", "/litepaper"],
   ["Press", "/press"],
-  ["Access", "/access"],
   ["Calendar", "/calendar"],
   ["Links", "/links"],
   ["ESP32", "/esp32"],
@@ -44,8 +43,8 @@ export default function Page() {
             </p>
             <p>
               Our NFT layer is designed for long-term creative access: music,
-              visuals, studio sessions, and collaboration. See the About page
-              for the live framework and utilities.
+              visuals, studio sessions, and collaboration. See the hOUR Token
+              page for the live framework, about notes, and access links.
             </p>
           </div>
         </div>
