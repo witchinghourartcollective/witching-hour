@@ -1,9 +1,14 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit'
-import { base, mainnet } from 'wagmi/chains'
+import { createConfig } from "@privy-io/wagmi";
+import { base, mainnet } from "viem/chains";
+import { http } from "wagmi";
 
-export const config = getDefaultConfig({
-  appName: 'Witching Hour',
-  projectId: '17703620f46ce5a72d0b624db25bcfaa',
-  chains: [base, mainnet],
+export const supportedChains = [base, mainnet] as const;
+
+export const config = createConfig({
+  chains: supportedChains,
   ssr: true,
-})
+  transports: {
+    [base.id]: http(),
+    [mainnet.id]: http(),
+  },
+});

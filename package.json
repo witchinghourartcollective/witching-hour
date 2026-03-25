@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy:webhook": "npx wrangler deploy"
   },
   "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.2.10",
+    "@coinbase/cdp-sdk": "^1.45.0",
+    "@privy-io/react-auth": "^3.18.0",
+    "@privy-io/wagmi": "^4.0.3",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "@tanstack/react-query": "^5.91.0",
@@ -22,7 +25,7 @@
     "qr": "^0.5.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "viem": "^2.47.5",
+    "viem": "^2.47.4",
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
