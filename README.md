@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## CDP Test Route
+
+Set these server-side env vars in your local `.env`:
+
+```bash
+CDP_API_KEY_ID=your-cdp-key-id
+CDP_API_KEY_SECRET="-----BEGIN EC PRIVATE KEY-----\n...\n-----END EC PRIVATE KEY-----\n"
+```
+
+Then start the app and open:
+
+```bash
+http://localhost:3000/api/cdp/test
+```
+
+That route generates a CDP JWT with your keypair and makes a read-only request to Coinbase's `GET /platform/v2/evm/accounts` endpoint. It returns the upstream status and payload without exposing the secret.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

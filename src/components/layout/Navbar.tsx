@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { WalletConnect } from "@/components/wallet/WalletConnect";
 
 export default function Navbar() {
   return (
@@ -17,7 +17,7 @@ export default function Navbar() {
           Token
         </a>
 
-        <ConnectButton />
+        <WalletConnect />
       </div>
     </nav>
   );

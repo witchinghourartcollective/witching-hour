@@ -1,27 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useAccount,
-  useChainId,
-  useConnect,
-  useDisconnect,
-  useSwitchChain,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { parseUnits } from "viem";
 import { base, mainnet } from "wagmi/chains";
+import { WalletConnect } from "@/components/wallet/WalletConnect";
+import { TransactionButton } from "@/components/wallet/TransactionButton";
 import { HOUR_TOKEN } from "@/lib/token";
+
+const tipCall = {
+  address: HOUR_TOKEN.address,
+  abi: HOUR_TOKEN.abi,
+  functionName: "transfer",
+  args: [
+    "0xA327c87770893178144C422511cfaC682c926C6A",
+    parseUnits("1", 18),
+  ],
+} as const;
 
 export default function Feed() {
   const [error, setError] = useState("");
 
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
-  const { writeContract } = useWriteContract();
 
   const switchChain = async (targetChainId: number) => {
     try {
@@ -32,43 +34,19 @@ export default function Feed() {
     }
   };
 
-  const handleTip = () => {
-    setError("");
-
-    if (!address) {
-      setError("Connect wallet first");
-      return;
-    }
-
-    if (chainId !== base.id) {
-      setError("Tips only work on Base. Switch networks before sending hOUR.");
-      return;
-    }
-
-    writeContract({
-      address: HOUR_TOKEN.address,
-      abi: HOUR_TOKEN.abi,
-      functionName: "transfer",
-      args: [
-        "0xA327c87770893178144C422511cfaC682c926C6A",
-        parseUnits("1", 18),
-      ],
-    });
-  };
-
   return (
     <div>
       <h2>Feed</h2>
 
       {!isConnected ? (
-        <button onClick={() => connect({ connector: connectors[0] })}>
-          Connect Wallet
-        </button>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <WalletConnect />
+        </div>
       ) : (
         <div>
           <p>Connected: {address}</p>
           <p>Network: {chainId === base.id ? "Base" : `Chain ${chainId}`}</p>
-          <button onClick={() => disconnect()}>Disconnect</button>
+          <WalletConnect />
         </div>
       )}
 
@@ -85,9 +63,12 @@ export default function Feed() {
       </button>
 
       <div style={{ marginTop: "20px" }}>
-        <button onClick={handleTip} disabled={!isConnected || chainId !== base.id}>
-          Tip 1 hOUR
-        </button>
+        <TransactionButton
+          call={tipCall}
+          chainId={base.id}
+          buttonText="Tip 1 hOUR"
+          disabled={!isConnected}
+        />
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

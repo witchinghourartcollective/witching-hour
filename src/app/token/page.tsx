@@ -2,16 +2,16 @@ import Link from "next/link";
 
 const infoLinks = [
   {
-    title: "About",
-    href: "/about",
+    title: "Feed",
+    href: "/feed",
     description:
-      "Read the broader Witching Hour frame, public-facing context, and project intent.",
+      "Open the feed and connect MetaMask for wallet actions and token interaction.",
   },
   {
-    title: "Access",
-    href: "/access",
+    title: "Rich Jewelz",
+    href: "/rich-jewelz",
     description:
-      "Open the access path for holders, utilities, gated drops, and participation routes.",
+      "Open the Rich Jewelz page for the adjacent collection and companion route.",
   },
 ] as const;
 

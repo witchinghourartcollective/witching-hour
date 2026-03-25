@@ -2,17 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navItems = [
-  ["Ritual", "/ritual"],
-  ["Sigils", "/sigils"],
+  ["Feed", "/feed"],
   ["hOUR Token", "/token"],
-  ["NFT", "/nft"],
-  ["Mint", "/mint"],
-  ["Litepaper", "/litepaper"],
-  ["Press", "/press"],
-  ["Calendar", "/calendar"],
-  ["Links", "/links"],
-  ["ESP32", "/esp32"],
-  ["WAX Dashboard", "/dashboard"],
+  ["Rich Jewelz", "/rich-jewelz"],
+  ["Blog Demo", "/blog"],
 ] as const;
 
 export default function Page() {
@@ -73,7 +66,7 @@ export default function Page() {
       </section>
 
       <nav aria-label="Primary" className="border-t border-white/10 pt-8">
-        <ul className="grid gap-3 text-sm text-white/80 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 text-sm text-white/80 sm:grid-cols-2 lg:grid-cols-4">
           {navItems.map(([label, href]) => (
             <li key={href}>
               <Link
