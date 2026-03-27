@@ -9,17 +9,35 @@ function getAppUrl() {
   return url.replace(/\/+$/, "");
 }
 
+function withValidProperties<T extends Record<string, unknown>>(properties: T) {
+  return Object.fromEntries(
+    Object.entries(properties).filter(([_, value]) => {
+      if (!value) {
+        return false;
+      }
+
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+
+      if (typeof value === "object") {
+        return Object.values(value).some(Boolean);
+      }
+
+      return Boolean(value);
+    }),
+  );
+}
+
 export function GET() {
   const appUrl = getAppUrl();
+  const ownerAddress = process.env.BASE_BUILDER_OWNER_ADDRESS?.trim();
 
-  const manifest = {
+  const manifest = withValidProperties({
     accountAssociation: {
       header: process.env.FARCASTER_HEADER ?? "",
       payload: process.env.FARCASTER_PAYLOAD ?? "",
       signature: process.env.FARCASTER_SIGNATURE ?? "",
-    },
-    baseBuilder: {
-      ownerAddress: process.env.BASE_BUILDER_OWNER_ADDRESS ?? "",
     },
     miniapp: {
       version: "1",
@@ -38,7 +56,12 @@ export function GET() {
       ogDescription: "Base-native ritual feed and hOUR access layer.",
       ogImageUrl: `${appUrl}/logo/hour-basescan.svg`,
     },
-  };
+    baseBuilder: ownerAddress
+      ? {
+          ownerAddress,
+        }
+      : undefined,
+  });
 
   return Response.json(manifest, {
     headers: {
