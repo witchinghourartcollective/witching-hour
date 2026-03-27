@@ -1,6 +1,6 @@
 import "./globals.css";
 import { DevExtensionErrorFilter } from "../components/DevExtensionErrorFilter";
-import { AppProviders } from "../components/providers/AppProviders";
+import { ProvidersBoundary } from "../components/providers/ProvidersBoundary";
 
 export default function RootLayout({
   children,
@@ -9,9 +9,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="base:app_id" content="69c39a7a6d153fb47b06adc5" />
+      </head>
       <body>
         <DevExtensionErrorFilter />
-        <AppProviders>{children}</AppProviders>
+        <ProvidersBoundary>{children}</ProvidersBoundary>
       </body>
     </html>
   );

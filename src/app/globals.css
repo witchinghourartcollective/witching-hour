@@ -3,13 +3,120 @@
 @tailwind utilities;
 
 :root {
-  --bg: #050505;
-  --purple: #6a00ff;
-  --green: #00ff9f;
+  --bg: #08050d;
+  --bg-elevated: rgba(255, 255, 255, 0.06);
+  --panel: rgba(17, 10, 24, 0.82);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #f5ebff;
+  --muted: rgba(245, 235, 255, 0.72);
+  --accent: #ff4fd8;
+  --accent-soft: rgba(255, 79, 216, 0.18);
+  --sigil: #8b5cf6;
+  --ember: #ffb86c;
+  --success: #8cf6c4;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
+    Palatino, "URW Palladio L", serif;
+  --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --grid-line: rgba(255, 255, 255, 0.045);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(139, 92, 246, 0.14), transparent 32%),
+    linear-gradient(180deg, #12061c 0%, #08050d 52%, #050308 100%);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--bg);
-  color: white;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255, 79, 216, 0.12), transparent 25%),
+    radial-gradient(circle at 82% 12%, rgba(255, 184, 108, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  letter-spacing: 0.01em;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, transparent 0, transparent calc(100% - 1px), var(--grid-line) calc(100% - 1px)),
+    linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), var(--grid-line) calc(100% - 1px));
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 88%);
+  opacity: 0.55;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+::selection {
+  background: rgba(255, 79, 216, 0.3);
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+}
+
+.eyebrow {
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 0.72rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+}
+
+.ritual-button {
+  border: 1px solid rgba(255, 79, 216, 0.36);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 79, 216, 0.22),
+    rgba(139, 92, 246, 0.16)
+  );
+  color: var(--text);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.ritual-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 79, 216, 0.6);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 79, 216, 0.3),
+    rgba(139, 92, 246, 0.22)
+  );
+}
+
+.ritual-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }

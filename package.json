@@ -10,6 +10,7 @@
     "deploy:webhook": "npx wrangler deploy"
   },
   "dependencies": {
+    "@base-org/account": "^2.4.0",
     "@coinbase/cdp-sdk": "^1.45.0",
     "@privy-io/react-auth": "^3.18.0",
     "@privy-io/wagmi": "^4.0.3",

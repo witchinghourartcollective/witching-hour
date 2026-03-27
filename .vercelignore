@@ -1,0 +1,50 @@
+.git
+.next
+node_modules
+.env
+.env.local
+.env*.local
+
+# Local tooling/editor state
+.adal
+.agents
+.augment
+.claude
+.codebuddy
+.commandcode
+.continue
+.cortex
+.crush
+.factory
+.goose
+.iflow
+.junie
+.kilocode
+.kiro
+.kode
+.mcpjam
+.mux
+.openhands
+.pi
+.pochi
+.qoder
+.qwen
+.roo
+.trae
+.vibe
+.windsurf
+.zencoder
+
+# Non-app artifacts and backups
+whm-export.tar.gz
+mistakes.md
+nano
+skills
+skills-lock.json
+workers
+wrangler.toml
+
+# Duplicate or reference app trees
+Witching Hour Music
+witching hour
+witching-hour-app

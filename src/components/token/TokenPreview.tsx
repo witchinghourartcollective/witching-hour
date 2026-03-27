@@ -1,16 +1,28 @@
 export default function TokenPreview() {
   return (
-    <section className="px-6 py-12 max-w-4xl mx-auto">
-      <h2 className="text-2xl mb-6 text-purple-500">hOUR Token</h2>
-
-      <div className="p-6 border border-gray-800 rounded-xl">
-        <p>Total Supply: 21,369,777</p>
-        <p>Network: Base</p>
-
-        <button className="mt-4 px-4 py-2 bg-purple-600 rounded-lg">
-          Add Liquidity
-        </button>
+    <section className="panel rounded-[2rem] p-7">
+      <p className="eyebrow">hOUR Token</p>
+      <h2 className="mt-3 text-3xl text-white">The access layer for the system.</h2>
+      <div className="mt-6 space-y-4 rounded-[1.5rem] border border-white/10 bg-black/20 p-5 text-sm text-white/75">
+        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <span className="text-white/50">Network</span>
+          <span>Base</span>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <span className="text-white/50">Use</span>
+          <span>Tipping, access, and signal</span>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-white/50">State</span>
+          <span>Live contract surfaced in-app</span>
+        </div>
       </div>
+      <a
+        href="/token"
+        className="ritual-button mt-6 inline-flex rounded-full px-5 py-3 text-sm font-medium"
+      >
+        Open token route
+      </a>
     </section>
   );
 }
