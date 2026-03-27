@@ -48,6 +48,12 @@ export function FeedClient() {
       enabled: Boolean(address),
     },
   });
+  const { data: tradingEnabled } = useReadContract({
+    address: HOUR_TOKEN.address,
+    abi: HOUR_TOKEN.abi,
+    functionName: "tradingEnabled",
+    chainId: base.id,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -164,6 +170,7 @@ export function FeedClient() {
   const isOnBase = chainId === base.id;
   const displayNetwork = isOnBase ? "Base" : `Chain ${chainId}`;
   const hasEnoughHour = typeof hourBalance === "bigint" && hourBalance >= tipAmount;
+  const isTradingLive = tradingEnabled === true;
   const formattedHourBalance =
     typeof hourBalance === "bigint"
       ? formatUnits(hourBalance, HOUR_TOKEN.decimals)
@@ -172,6 +179,8 @@ export function FeedClient() {
     ? null
     : !isOnBase
       ? "Switch to Base before sending hOUR."
+      : tradingEnabled !== true
+        ? "hOUR transfers are not live yet. The token contract still has trading disabled on Base."
       : typeof hourBalance !== "bigint"
         ? "Loading hOUR balance..."
         : !hasEnoughHour
@@ -199,6 +208,7 @@ export function FeedClient() {
             <div className="mt-4 space-y-3 text-sm text-white/78">
               <p>Wallet: {isConnected && address ? address : "Not connected"}</p>
               <p>Network: {isConnected ? displayNetwork : "Awaiting sign-in"}</p>
+              <p>Trading: {isTradingLive ? "Live" : "Disabled"}</p>
               <p>
                 hOUR Balance:{" "}
                 {isConnected

@@ -20,5 +20,12 @@ export const HOUR_TOKEN = {
       ],
       outputs: [{ name: "", type: "bool" }],
     },
+    {
+      name: "tradingEnabled",
+      type: "function",
+      stateMutability: "view",
+      inputs: [],
+      outputs: [{ name: "", type: "bool" }],
+    },
   ],
 } as const;
