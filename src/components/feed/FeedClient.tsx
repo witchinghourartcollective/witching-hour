@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseUnits } from "viem";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { formatUnits, parseUnits } from "viem";
+import { useAccount, useChainId, useReadContract, useSwitchChain } from "wagmi";
 import { base, mainnet } from "wagmi/chains";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
 import { TransactionButton } from "@/components/wallet/TransactionButton";
@@ -21,9 +21,11 @@ const tipCall = {
   functionName: "transfer",
   args: [
     "0xA327c87770893178144C422511cfaC682c926C6A",
-    parseUnits("1", 18),
+    parseUnits("1", HOUR_TOKEN.decimals),
   ],
 } as const;
+
+const tipAmount = parseUnits("1", HOUR_TOKEN.decimals);
 
 export function FeedClient() {
   const [error, setError] = useState("");
@@ -36,6 +38,16 @@ export function FeedClient() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
+  const { data: hourBalance } = useReadContract({
+    address: HOUR_TOKEN.address,
+    abi: HOUR_TOKEN.abi,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    chainId: base.id,
+    query: {
+      enabled: Boolean(address),
+    },
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -151,6 +163,20 @@ export function FeedClient() {
 
   const isOnBase = chainId === base.id;
   const displayNetwork = isOnBase ? "Base" : `Chain ${chainId}`;
+  const hasEnoughHour = typeof hourBalance === "bigint" && hourBalance >= tipAmount;
+  const formattedHourBalance =
+    typeof hourBalance === "bigint"
+      ? formatUnits(hourBalance, HOUR_TOKEN.decimals)
+      : null;
+  const tipDisabledReason = !isConnected
+    ? null
+    : !isOnBase
+      ? "Switch to Base before sending hOUR."
+      : typeof hourBalance !== "bigint"
+        ? "Loading hOUR balance..."
+        : !hasEnoughHour
+          ? `This wallet holds ${formattedHourBalance} ${HOUR_TOKEN.symbol}. You need at least 1 ${HOUR_TOKEN.symbol} to send a tip.`
+          : null;
 
   return (
     <div className="space-y-8">
@@ -173,6 +199,14 @@ export function FeedClient() {
             <div className="mt-4 space-y-3 text-sm text-white/78">
               <p>Wallet: {isConnected && address ? address : "Not connected"}</p>
               <p>Network: {isConnected ? displayNetwork : "Awaiting sign-in"}</p>
+              <p>
+                hOUR Balance:{" "}
+                {isConnected
+                  ? formattedHourBalance
+                    ? `${formattedHourBalance} ${HOUR_TOKEN.symbol}`
+                    : "Loading..."
+                  : "Connect wallet"}
+              </p>
               <p>Status: {status}</p>
             </div>
             <div className="mt-5">
@@ -238,7 +272,8 @@ export function FeedClient() {
               call={tipCall}
               chainId={base.id}
               buttonText="Tip 1 hOUR"
-              disabled={!isConnected}
+              disabled={!isConnected || Boolean(tipDisabledReason)}
+              disabledMessage={tipDisabledReason}
             />
           </div>
         </div>

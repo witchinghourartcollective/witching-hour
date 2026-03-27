@@ -33,6 +33,7 @@ type TransactionButtonProps = {
   chainId: number;
   buttonText?: string;
   disabled?: boolean;
+  disabledMessage?: string | null;
   className?: string;
 };
 
@@ -45,6 +46,7 @@ export function TransactionButton({
   chainId,
   buttonText = "Send transaction",
   disabled = false,
+  disabledMessage,
   className,
 }: TransactionButtonProps) {
   const { address, chainId: activeChainId, isConnected } = useAccount();
@@ -218,6 +220,10 @@ export function TransactionButton({
 
       {status.statusName === "error" ? (
         <p className="text-sm text-rose-300">{status.statusData.message}</p>
+      ) : null}
+
+      {disabledMessage && status.statusName !== "error" ? (
+        <p className="text-sm text-amber-200/90">{disabledMessage}</p>
       ) : null}
 
       {status.statusName === "success" ? (

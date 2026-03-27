@@ -76,3 +76,6 @@ skills-lock.json
 # local sibling projects
 Witching Hour Music/
 witching hour/
+
+# local exports
+whm-export.tar.gz

@@ -1,5 +1,7 @@
 export const HOUR_TOKEN = {
   address: "0xFC1c0FFF99845676A588CE21c28C4859F3035866",
+  decimals: 18,
+  symbol: "hOUR",
   abi: [
     {
       name: "balanceOf",
