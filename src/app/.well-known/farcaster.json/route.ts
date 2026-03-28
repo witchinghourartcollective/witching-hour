@@ -1,4 +1,5 @@
 const defaultAppUrl = "https://app.witchinghourmac.com";
+const defaultOwnerAddress = "0xE7e0377E789fd576600D797FdD23c9A6350d8ABb";
 
 function getAppUrl() {
   const url = process.env.NEXT_PUBLIC_APP_URL?.trim();
@@ -31,7 +32,8 @@ function withValidProperties<T extends Record<string, unknown>>(properties: T) {
 
 export function GET() {
   const appUrl = getAppUrl();
-  const ownerAddress = process.env.BASE_BUILDER_OWNER_ADDRESS?.trim();
+  const ownerAddress =
+    process.env.BASE_BUILDER_OWNER_ADDRESS?.trim() || defaultOwnerAddress;
 
   const manifest = withValidProperties({
     accountAssociation: {
