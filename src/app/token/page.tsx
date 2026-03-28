@@ -61,6 +61,38 @@ export default function Token() {
         </div>
       </section>
 
+      <section className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
+        <div className="rounded-[1.75rem] border border-amber-400/20 bg-amber-500/10 p-7 shadow-[0_0_80px_rgba(245,158,11,0.1)] backdrop-blur">
+          <p className="text-xs uppercase tracking-[0.35em] text-amber-200/75">
+            Launch Status
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">
+            hOUR is surfaced, but trading is not live yet.
+          </h2>
+          <div className="mt-4 space-y-4 text-sm leading-7 text-white/78">
+            <p>
+              The app can read the contract and show token state, but wallet
+              transfers remain blocked until the owner enables trading on Base.
+            </p>
+            <p>
+              If you are preparing a real launch, add liquidity first and then
+              call <code>enableTrading()</code> from the owner wallet.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[1.75rem] border border-white/10 bg-black/30 p-7">
+          <p className="text-xs uppercase tracking-[0.35em] text-white/45">
+            Launch Checklist
+          </p>
+          <ol className="mt-4 space-y-4 text-sm leading-7 text-white/75">
+            <li>1. Confirm liquidity plan for the Base launch.</li>
+            <li>2. Enable trading from the token owner wallet.</li>
+            <li>3. Re-test the feed tip action with a funded wallet.</li>
+          </ol>
+        </div>
+      </section>
+
       <section className="space-y-4">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-white/45">
