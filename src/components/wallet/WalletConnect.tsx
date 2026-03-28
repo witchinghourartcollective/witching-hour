@@ -1,10 +1,21 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 function truncateAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+function getConnectorLabel(name: string) {
+  if (name.toLowerCase().includes("base")) {
+    return "Base Account";
+  }
+
+  if (name.toLowerCase().includes("injected")) {
+    return "Browser Wallet";
+  }
+
+  return name;
 }
 
 type WalletConnectProps = {
@@ -13,7 +24,8 @@ type WalletConnectProps = {
 
 export function WalletConnect({ className }: WalletConnectProps) {
   const { address, isConnected } = useAccount();
-  const { authenticated, connectWallet, login, logout, ready } = usePrivy();
+  const { connect, connectors, isPending, pendingConnector } = useConnect();
+  const { disconnect } = useDisconnect();
 
   if (isConnected && address) {
     return (
@@ -23,7 +35,7 @@ export function WalletConnect({ className }: WalletConnectProps) {
         </span>
         <button
           type="button"
-          onClick={() => void logout()}
+          onClick={() => disconnect()}
           className="rounded-full border border-white/15 px-3 py-2 text-sm text-white/70 transition hover:border-white/30 hover:text-white"
         >
           Sign out
@@ -33,24 +45,20 @@ export function WalletConnect({ className }: WalletConnectProps) {
   }
 
   return (
-    <button
-      type="button"
-      disabled={!ready}
-      onClick={() => {
-        if (authenticated) {
-          connectWallet();
-          return;
-        }
-
-        login();
-      }}
-      className={`rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm font-medium text-fuchsia-100 transition hover:border-fuchsia-300/60 hover:bg-fuchsia-500/20 disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`.trim()}
-    >
-      {!ready
-        ? "Loading..."
-        : authenticated
-          ? "Connect wallet"
-          : "Sign in"}
-    </button>
+    <div className={`flex flex-wrap items-center gap-2 ${className ?? ""}`.trim()}>
+      {connectors.map((connector) => (
+        <button
+          key={connector.uid}
+          type="button"
+          disabled={isPending}
+          onClick={() => connect({ connector })}
+          className="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm font-medium text-fuchsia-100 transition hover:border-fuchsia-300/60 hover:bg-fuchsia-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isPending && pendingConnector?.uid === connector.uid
+            ? "Connecting..."
+            : getConnectorLabel(connector.name)}
+        </button>
+      ))}
+    </div>
   );
 }

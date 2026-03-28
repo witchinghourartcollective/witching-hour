@@ -30,7 +30,7 @@ type TransactionStatus =
 
 type TransactionButtonProps = {
   call: ContractCall;
-  chainId: number;
+  chainId: typeof base.id;
   buttonText?: string;
   disabled?: boolean;
   disabledMessage?: string | null;

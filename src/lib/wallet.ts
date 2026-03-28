@@ -1,14 +1,26 @@
-import { createConfig } from "@privy-io/wagmi";
-import { base, mainnet } from "viem/chains";
-import { http } from "wagmi";
-
-export const supportedChains = [base, mainnet] as const;
+import { cookieStorage, createConfig, createStorage, http } from "wagmi";
+import { base } from "wagmi/chains";
+import { baseAccount, injected } from "wagmi/connectors";
 
 export const config = createConfig({
-  chains: supportedChains,
+  chains: [base],
+  connectors: [
+    injected(),
+    baseAccount({
+      appName: "Witching Hour",
+    }),
+  ],
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
   ssr: true,
   transports: {
     [base.id]: http(),
-    [mainnet.id]: http(),
   },
 });
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof config;
+  }
+}

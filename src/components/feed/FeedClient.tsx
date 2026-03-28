@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId, useReadContract, useSwitchChain } from "wagmi";
-import { base, mainnet } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
 import { TransactionButton } from "@/components/wallet/TransactionButton";
 import { HOUR_TOKEN } from "@/lib/token";
@@ -100,7 +100,7 @@ export function FeedClient() {
     };
   }, []);
 
-  const switchChain = async (targetChainId: number) => {
+  const switchChain = async (targetChainId: typeof base.id) => {
     try {
       setError("");
       await switchChainAsync({ chainId: targetChainId });
@@ -224,15 +224,11 @@ export function FeedClient() {
             </div>
             <button
               type="button"
-              onClick={() => switchChain(isOnBase ? mainnet.id : base.id)}
+              onClick={() => switchChain(base.id)}
               disabled={!isConnected || isSwitching}
               className="mt-4 rounded-full border border-white/12 bg-white/5 px-4 py-3 text-sm text-white/78 transition hover:border-white/24 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSwitching
-                ? "Switching..."
-                : isOnBase
-                  ? "Switch to Ethereum"
-                  : "Switch to Base"}
+              {isSwitching ? "Switching..." : isOnBase ? "On Base" : "Switch to Base"}
             </button>
             {error ? <p className="mt-3 text-sm text-rose-300">{error}</p> : null}
           </div>
