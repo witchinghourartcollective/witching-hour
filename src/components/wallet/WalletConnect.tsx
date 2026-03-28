@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 function truncateAddress(address: string) {
@@ -24,8 +25,9 @@ type WalletConnectProps = {
 
 export function WalletConnect({ className }: WalletConnectProps) {
   const { address, isConnected } = useAccount();
-  const { connect, connectors, isPending, pendingConnector } = useConnect();
+  const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const [activeConnectorId, setActiveConnectorId] = useState<string | null>(null);
 
   if (isConnected && address) {
     return (
@@ -51,10 +53,20 @@ export function WalletConnect({ className }: WalletConnectProps) {
           key={connector.uid}
           type="button"
           disabled={isPending}
-          onClick={() => connect({ connector })}
+          onClick={() => {
+            setActiveConnectorId(connector.uid);
+            connect(
+              { connector },
+              {
+                onSettled: () => {
+                  setActiveConnectorId(null);
+                },
+              },
+            );
+          }}
           className="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm font-medium text-fuchsia-100 transition hover:border-fuchsia-300/60 hover:bg-fuchsia-500/20 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending && pendingConnector?.uid === connector.uid
+          {isPending && activeConnectorId === connector.uid
             ? "Connecting..."
             : getConnectorLabel(connector.name)}
         </button>
