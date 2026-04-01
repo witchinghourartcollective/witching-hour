@@ -1,5 +1,13 @@
+"use client";
+
 import Image from "next/image";
-import { getSpotifyArtistHighlight } from "@/lib/spotify";
+import { useEffect, useState } from "react";
+import type { SpotifyArtistHighlight } from "@/lib/spotify";
+
+type SpotifyHighlightResponse = {
+  highlight: SpotifyArtistHighlight | null;
+  error?: string;
+};
 
 function formatReleaseDate(value: string) {
   const parsed = new Date(value);
@@ -19,10 +27,47 @@ function formatReleaseType(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export async function SpotifySpotlight() {
-  const spotify = await getSpotifyArtistHighlight();
+export function SpotifySpotlight() {
+  const [spotify, setSpotify] = useState<SpotifyArtistHighlight | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!spotify) {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadHighlight() {
+      try {
+        const response = await fetch("/api/spotify/highlight", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Spotify highlight request failed with ${response.status}`);
+        }
+
+        const payload = (await response.json()) as SpotifyHighlightResponse;
+
+        if (!cancelled) {
+          setSpotify(payload.highlight);
+        }
+      } catch {
+        if (!cancelled) {
+          setSpotify(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadHighlight();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading || !spotify) {
     return (
       <section className="grid gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-[0_0_80px_rgba(106,0,255,0.12)] backdrop-blur md:grid-cols-[1.1fr_0.9fr] md:p-8">
         <div className="space-y-4">
@@ -33,9 +78,9 @@ export async function SpotifySpotlight() {
             Connect Spotify once and the site updates itself.
           </h2>
           <p className="max-w-2xl text-sm leading-7 text-white/70">
-            Add `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, and `SPOTIFY_ARTIST_ID`
-            to the app environment. After that, the homepage will pull the latest
-            release from Spotify automatically.
+            Add <code>SPOTIFY_CLIENT_ID</code>, <code>SPOTIFY_CLIENT_SECRET</code>,
+            and <code>SPOTIFY_ARTIST_ID</code> to the app environment. After that,
+            the homepage will pull the latest release from Spotify automatically.
           </p>
         </div>
       </section>

@@ -28,7 +28,7 @@ type SpotifyAlbumsResponse = {
   items: SpotifyAlbum[];
 };
 
-type SpotifyArtistHighlight = {
+export type SpotifyArtistHighlight = {
   artist: {
     id: string;
     name: string;

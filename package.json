@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
+    "send:test-tx": "node scripts/send-test-tx.mjs",
+    "verify:builder-code": "node scripts/verify-builder-code.mjs",
     "deploy:webhook": "npx wrangler deploy"
   },
   "dependencies": {
+    "@base-org/account": "^2.5.3",
     "@coinbase/cdp-sdk": "^1.45.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",
@@ -19,11 +22,12 @@
     "ethers": "^6.16.0",
     "framer-motion": "^12.38.0",
     "next": "16.1.7",
+    "ox": "^0.14.10",
     "pg": "^8.20.0",
     "qr": "^0.5.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "viem": "^2.47.4",
+    "viem": "^2.47.6",
     "wagmi": "^2.19.5"
   },
   "devDependencies": {

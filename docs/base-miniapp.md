@@ -1,68 +1,73 @@
-# Base Mini App Notes
+# Base Miniapp Notes
 
-## Live domain
+This app ships Base/Farcaster miniapp metadata from two places:
 
-- App: `https://app.witchinghourmac.com`
-- Vercel project: `witching-hour-app`
+- `src/app/layout.tsx`
+- `src/app/.well-known/farcaster.json/route.ts`
+
+## Current Defaults In Code
+
+- app URL: `https://app.witchinghourmac.com`
 - Base app ID: `69c39a7a6d153fb47b06adc5`
-- Base builder code: `bc_rzjipz72`
-- Base builder owner address: `0xE7e0377E789fd576600D797FdD23c9A6350d8ABb`
+- builder code: `bc_rzjipz72`
+- default builder owner: `0xE7e0377E789fd576600D797FdD23c9A6350d8ABb`
 
-## Required live metadata
+## Head Metadata
 
-- Root HTML head must include:
-  - `<meta name="base:app_id" content="69c39a7a6d153fb47b06adc5" />`
-  - `<meta name="fc:miniapp" ... />`
-- Manifest route must exist at:
-  - `/.well-known/farcaster.json`
+`src/app/layout.tsx` currently injects:
 
-## Current auth model
+- `<meta name="base:app_id" ... />`
+- `<meta name="fc:miniapp" ... />`
 
-- The app no longer relies on Farcaster sign-in or FID-based identity.
-- Authentication uses SIWE.
-- User identity is the connected wallet address from wagmi.
-- Runtime providers are:
-  - `WagmiProvider`
-  - `QueryClientProvider`
+The `fc:miniapp` payload advertises the production app URL and uses `/logo/hour-basescan.svg` for icon and splash imagery.
 
-## Current wagmi setup
+## Manifest Route
 
-- Chain: Base only
+`/.well-known/farcaster.json` returns:
+
+- `accountAssociation`
+- `miniapp`
+- `baseBuilder`
+
+The response is cached with `Cache-Control: public, max-age=300`.
+
+## Env Overrides
+
+### Used by the manifest route
+
+- `NEXT_PUBLIC_APP_URL`
+  - Overrides the default app URL.
+- `BASE_BUILDER_OWNER_ADDRESS`
+  - Overrides the default owner address in `baseBuilder.ownerAddress`.
+- `FARCASTER_HEADER`
+- `FARCASTER_PAYLOAD`
+- `FARCASTER_SIGNATURE`
+  - When present, these populate `accountAssociation`.
+
+### Used by wallet attribution
+
+- `NEXT_PUBLIC_BASE_BUILDER_CODE`
+  - Overrides the default builder code in `src/lib/wallet.ts`.
+
+## Runtime Auth Model
+
+- The app is wallet-address based.
+- wagmi is configured for Base only.
 - Connectors:
-  - `injected()`
-  - `baseAccount({ appName: "Witching Hour" })`
-- Storage:
-  - `createStorage({ storage: cookieStorage })`
-- SSR:
-  - `true`
+  - injected
+  - Base Account
+- The current setup is not Farcaster-sign-in dependent for app runtime identity.
 
-## Manifest / verification
+## Validation Checklist
 
-- Live manifest currently includes:
-  - `miniapp`
-  - `baseBuilder.ownerAddress`
-- If verification ever needs to be re-run with signed account association, the remaining env vars are:
-  - `FARCASTER_HEADER`
-  - `FARCASTER_PAYLOAD`
-  - `FARCASTER_SIGNATURE`
-  - optional override: `BASE_BUILDER_OWNER_ADDRESS`
+1. Open `/.well-known/farcaster.json`
+2. Confirm `homeUrl`, `iconUrl`, and `ogImageUrl` point at the expected domain
+3. Confirm `baseBuilder.ownerAddress` is correct
+4. Confirm `accountAssociation` is either fully populated or omitted intentionally
+5. Confirm the homepage still renders the `base:app_id` and `fc:miniapp` meta tags
 
-## hOUR token status
+## Separation Of Concerns
 
-- Token contract: `0xFC1c0FFF99845676A588CE21c28C4859F3035866`
-- Network: Base
-- The app reads `tradingEnabled()` from the token contract.
-- If `tradingEnabled` is `false`, the tip action is intentionally disabled in the UI.
-- This avoids wallet/RPC failures for a token that is not live yet.
-
-## Launch sequence
-
-1. Add liquidity if a real market launch is intended.
-2. Call `enableTrading()` from the token owner wallet.
-3. Re-test hOUR transfers and feed tipping.
-
-## Practical reminder
-
-- Base verification and token launch are separate concerns.
-- `base:app_id`, `fc:miniapp`, and `farcaster.json` handle app identity.
-- Liquidity and `enableTrading()` handle whether hOUR transfers can actually execute.
+- Base/Farcaster metadata verifies app identity and launch behavior
+- wallet config controls runtime connectivity and attribution
+- token launch state is a separate concern from miniapp verification

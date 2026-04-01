@@ -12,7 +12,7 @@ function getAppUrl() {
 
 function withValidProperties<T extends Record<string, unknown>>(properties: T) {
   return Object.fromEntries(
-    Object.entries(properties).filter(([_, value]) => {
+    Object.entries(properties).filter(([, value]) => {
       if (!value) {
         return false;
       }
