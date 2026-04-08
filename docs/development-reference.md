@@ -1,95 +1,80 @@
 # Development Reference
 
-This file is the practical map of the active app.
+This file is the practical map of the codebase as it exists today.
 
-## Active Surfaces
+## Current Runtime
 
-### Pages
+The current built app is using [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app).
 
-- `src/app/page.tsx`
-  - Main homepage with hero, Spotify spotlight, feed preview, token preview, and wallet panel.
-- `src/app/feed/page.tsx`
-  - Feed entry route. Hands off to `FeedPageShell` to keep wallet-heavy UI client-only.
-- `src/app/token/page.tsx`
-  - Token overview and launch-status page for hOUR.
-- `src/app/rich-jewelz/page.tsx`
-  - Standalone themed route.
-- `src/app/blog/page.tsx`
-  - Demo runtime-loaded blog page.
+### Served pages
 
-### API Routes
+- [`src/app/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/page.tsx)
+  Main Witching Hour landing page.
+- [`src/app/feed/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/feed/page.tsx)
+  Feed surface.
+- [`src/app/token/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/token/page.tsx)
+  Token overview and launch-status page.
+- [`src/app/blog/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/blog/page.tsx)
+  Blog demo route.
+- [`src/app/rich-jewelz/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/rich-jewelz/page.tsx)
+  Standalone themed route.
+- [`src/app/stream/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/stream/page.tsx)
+  Public-safe stream profile surface.
 
-- `src/app/api/posts/route.ts`
-  - Local SQLite-backed post listing and insert route.
-- `src/app/api/spotify/highlight/route.ts`
-  - Returns the latest artist release highlight or a non-fatal error payload.
-- `src/app/api/auth/dropbox/route.ts`
-  - Starts Dropbox OAuth.
-- `src/app/api/auth/dropbox/callback/route.ts`
-  - Completes Dropbox OAuth and stores cookies.
-- `src/app/api/base-auth/nonce/route.ts`
-  - Base auth nonce route.
-- `src/app/api/base-auth/verify/route.ts`
-  - Base auth verification route.
-- `src/app/api/cdp/test/route.ts`
-  - Read-only CDP sanity check route.
-- `src/app/.well-known/farcaster.json/route.ts`
-  - Base miniapp / Farcaster manifest.
+### Served API routes
 
-## Important Libraries
+- [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
+  Checks whether a wallet holds the hOUR token.
+- [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
+  Token-gated AI response route.
+- [`src/app/api/stream/chaturbate/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/stream/chaturbate/route.ts)
+  Returns public-safe primary and secondary stream profile data.
+- [`src/app/.well-known/farcaster.json/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/.well-known/farcaster.json/route.ts)
+  Base/Farcaster manifest endpoint.
 
-### Wallet and Base configuration
+### Runtime support files
 
-- `src/lib/wallet.ts`
-  - Base-only wagmi config
-  - injected + Base Account connectors
-  - builder-code attribution via ERC-8021
+- [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
+  Layout, global styles, providers boundary, and miniapp metadata.
+- [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
+  Rewrites the stream host root to `/stream`.
 
-### Data and integrations
+## Shared Source Used By The Runtime
 
-- `src/lib/db.ts`
-  - Opens `data/db.sqlite` and ensures the `posts` table exists.
-- `src/lib/activity.ts`
-  - Reads recent token transfers from BaseScan.
-- `src/lib/spotify.ts`
-  - Fetches artist and latest release data from Spotify.
-- `src/lib/dropbox.ts`
-  - Shared Dropbox OAuth helpers and cookie naming.
+The runtime imports heavily from `src/` via the `@/*` alias.
 
-### Providers and hydration boundaries
+### Components
 
-- `src/components/providers/AppProviders.tsx`
-  - Shared runtime providers.
-- `src/components/providers/ProvidersBoundary.tsx`
-  - Mounted boundary for provider initialization.
-- `src/components/feed/FeedPageShell.tsx`
-  - Client-only lazy import wrapper for the feed page.
-- `src/components/base/SignInWithBasePanelShell.tsx`
-  - Client-only wrapper around wallet auth UI.
+- [`src/components/WalletStatus.tsx`](/home/fletchervaughn/witching-hour-app/src/components/WalletStatus.tsx)
+- [`src/components/AIBox.tsx`](/home/fletchervaughn/witching-hour-app/src/components/AIBox.tsx)
+- [`src/components/providers/AppProviders.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/AppProviders.tsx)
 
-## Current Constraints
+### Libraries
 
-- The active app router is `src/app`. Do not revive an extra top-level `app/` tree.
-- The active component tree is `src/components`.
-- There is still a legacy nested `witching-hour-app/` folder in the repo. It is not the active app.
-- The feed API writes to a local SQLite file. That is fine for local development and demos, but not a durable production data architecture.
-- The token flow is intentionally Base-only.
+- [`src/lib/azure-openai.ts`](/home/fletchervaughn/witching-hour-app/src/lib/azure-openai.ts)
+  Azure OpenAI-compatible client and request helper.
+- [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
+  Base-only wagmi configuration.
+- [`src/lib/db.ts`](/home/fletchervaughn/witching-hour-app/src/lib/db.ts)
+  SQLite posts store used by the parallel `src/app` API.
 
-## Local Verification Checklist
+## Known Constraints
 
-After major UI or wallet changes, verify:
+- `@/*` resolves to `src/*`, so runtime code and shared code live in the same tree.
+- [`data/db.sqlite`](/home/fletchervaughn/witching-hour-app/data/db.sqlite) is local file-backed storage only.
+- The nested [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app) directory is legacy and should not be confused with the top-level project root.
 
-1. `/` loads without hydration issues
-2. `/feed` loads before a wallet is connected
-3. Wallet connect flow still works on Base
-4. `/token` still reflects the launch-status messaging
-5. `/.well-known/farcaster.json` returns valid JSON
-6. `/api/spotify/highlight` degrades cleanly when Spotify env vars are missing
+## Verification Checklist
+
+After documentation-sensitive code changes, verify:
+
+1. `npm run dev` starts cleanly.
+2. `/` renders wallet status and the AI box.
+3. `/feed` and `/stream` render.
+4. `/.well-known/farcaster.json` returns JSON.
+5. `/api/check-access` and `/api/stream/chaturbate` respond with JSON.
 
 ## Cleanup Targets
 
-These are valid cleanup candidates, but they should be handled intentionally:
-
-- nested `witching-hour-app/`
-- legacy top-level `components/` references that are no longer used
-- stale docs that describe already-removed routing/layout problems
+- Remove or archive the nested legacy [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app) scaffold once no longer needed.
+- If Chaturbate private endpoints are still needed anywhere, move them behind an authenticated admin path and rotate any tokens that were previously exposed.

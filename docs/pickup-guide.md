@@ -2,57 +2,54 @@
 
 This is the practical product-and-codebase orientation note.
 
-## Repo Truth
+## What Is Real Right Now
 
-- Build on the top-level app in this repo.
-- The canonical router is `src/app`.
-- The canonical component tree is `src/components`.
-- `data/db.sqlite` is the current local store for feed posts.
+- The current Next.js runtime is [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app).
+- Shared code also lives under [`src/`](/home/fletchervaughn/witching-hour-app/src) through the `@/*` alias.
+- [`data/db.sqlite`](/home/fletchervaughn/witching-hour-app/data/db.sqlite) is the local store for the posts API.
 
 ## Product Direction
 
-The current app is aiming for:
+The project is trying to combine:
 
 - wallet-first interaction
-- Base-native identity and transaction context
-- ritual/feed publishing instead of generic social posting
-- a more intentional Witching Hour visual system instead of generic starter styling
+- Base-native access control
+- token-gated AI and participation flows
+- stream publishing and mirrored endpoint configuration
+- a more thematic Witching Hour visual identity
 
 ## What To Preserve
 
-- Base miniapp metadata in `src/app/layout.tsx`
-- Manifest logic in `src/app/.well-known/farcaster.json/route.ts`
-- Base-only wallet configuration in `src/lib/wallet.ts`
-- SSR-safe wallet boundaries in `src/components/providers/*` and `src/components/feed/FeedPageShell.tsx`
-- Local feed API in `src/app/api/posts/route.ts`
+- Token gating logic in [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
+- AI routing in [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
+- Stream host rewrite in [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
+- Base-only wallet configuration in [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
+- Miniapp metadata in [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
 
 ## What Still Needs Care
 
-- The feed storage layer is minimal and local-only.
-- The token UI communicates launch status, but the deeper token interaction loop is still light.
-- The homepage mixes strong thematic language with some placeholder/demo-level content.
-- The repo still carries legacy directories that can confuse future work.
+- The public stream route was previously exposing tokenized private endpoints and now only exposes public-safe fields. Any previously exposed tokens should be rotated.
+- The feed/posts flow is still backed by local SQLite.
+- The repo still carries legacy directories that can confuse new work.
 
 ## Guardrails
 
-- Do not add a second router tree.
+- Do not add another router tree.
 - Do not assume any non-Base chain should be supported by the current wallet config.
-- Do not treat the nested `witching-hour-app/` directory as the deployment target.
 - Keep `.env.local` out of version control.
-- Be explicit when documentation is describing current behavior versus intended future work.
+- Keep Chaturbate private endpoints server-side only.
 
 ## Recommended File Priorities
 
-- `src/app/page.tsx`
-- `src/components/feed/FeedClient.tsx`
-- `src/app/api/posts/route.ts`
-- `src/lib/wallet.ts`
-- `src/lib/spotify.ts`
-- `src/app/globals.css`
+- [`src/app/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/page.tsx)
+- [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
+- [`src/app/stream/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/stream/page.tsx)
+- [`src/app/api/posts/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/posts/route.ts)
+- [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
 
 ## Definition Of A Good Next Pass
 
-- the docs still match the code after the change
-- the homepage and feed feel like the same product
-- wallet-dependent pages stay stable during SSR/hydration
-- the repo has fewer ambiguous “which app is real?” paths than it has today
+- The docs and runtime match.
+- One router tree stays clearly authoritative.
+- Wallet-dependent pages stay stable during SSR and hydration.
+- Contributors can tell which files are production truth and which ones are legacy.

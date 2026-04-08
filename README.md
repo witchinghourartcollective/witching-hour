@@ -1,44 +1,73 @@
 # Witching Hour App
 
-Witching Hour is a Next.js 16 app for a Base-native creative surface: wallet connection, ritual feed interactions, token-aware UI, miniapp metadata, and a small set of supporting server routes.
+Witching Hour is a Next.js app that combines wallet-aware UI, Base token gating, AI access checks, a stream surface, and several integration routes for Dropbox, Spotify, and Farcaster/Base miniapp metadata.
 
-This repo is not a clean greenfield app. It contains the active application plus some legacy/reference material from earlier iterations. The main documentation goal is to make the live path obvious.
+The repository now uses a single App Router tree under [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app). Older duplicate router structure has been removed so the docs and runtime match again.
 
-## What Is Live
+## Runtime Truth
 
-- Active app router: `src/app`
-- Active component tree: `src/components`
-- Live routes:
-  - `/`
-  - `/feed`
-  - `/token`
-  - `/rich-jewelz`
-  - `/blog`
-- Important API routes:
-  - `/.well-known/farcaster.json`
-  - `/api/posts`
-  - `/api/spotify/highlight`
-  - `/api/auth/dropbox`
-  - `/api/auth/dropbox/callback`
-  - `/api/base-auth/nonce`
-  - `/api/base-auth/verify`
+The current runtime comes from [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app).
 
-## Important Repo Caveat
+Live pages and routes currently defined there:
 
-There is a nested `witching-hour-app/` directory in this repo that contains an older duplicate app scaffold. Treat it as legacy material unless you are explicitly cleaning it up. The active app for local development and deployment is the top-level project rooted at this `README.md`.
+- `/`
+- `/feed`
+- `/token`
+- `/rich-jewelz`
+- `/blog`
+- `/stream`
+- `/api/ai`
+- `/api/check-access`
+- `/api/stream/chaturbate`
+- `/.well-known/farcaster.json`
+- `/api/posts`
+- `/api/spotify/highlight`
+- `/api/auth/dropbox`
+- `/api/auth/dropbox/callback`
+- `/api/base-auth/nonce`
+- `/api/base-auth/verify`
+- `/api/cdp/test`
+
+Important supporting runtime files:
+
+- [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
+  Rewrites `stream.witchinghourmac.com/` to `/stream`.
+- [`src/components/WalletStatus.tsx`](/home/fletchervaughn/witching-hour-app/src/components/WalletStatus.tsx)
+  Wallet connection status used by the root page.
+- [`src/components/AIBox.tsx`](/home/fletchervaughn/witching-hour-app/src/components/AIBox.tsx)
+  Token-gated AI surface used by the root page.
+- [`src/lib/azure-openai.ts`](/home/fletchervaughn/witching-hour-app/src/lib/azure-openai.ts)
+  Azure OpenAI-compatible client setup for `/api/ai`.
+
+## Repo Layout
+
+- [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app)
+  The only active router tree.
+- [`src/components/`](/home/fletchervaughn/witching-hour-app/src/components)
+  Active component library used by the top-level app through the `@/*` alias.
+- [`src/lib/`](/home/fletchervaughn/witching-hour-app/src/lib)
+  Shared integration logic, wallet config, SQLite access, and Azure OpenAI helpers.
+- [`data/db.sqlite`](/home/fletchervaughn/witching-hour-app/data/db.sqlite)
+  Local SQLite store for the posts API in the `src/app` tree.
+- [`workers/github-webhook/`](/home/fletchervaughn/witching-hour-app/workers/github-webhook)
+  Cloudflare Worker deployed by `npm run deploy:webhook`.
+- [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app)
+  Older nested duplicate scaffold. Treat as legacy unless you are intentionally cleaning it up.
 
 ## Stack
 
-- Next.js App Router
+- Next.js 16
 - React 19
 - TypeScript
 - wagmi + Base Account connector
+- viem
+- Azure OpenAI-compatible Responses API integration
 - SQLite via `better-sqlite3`
-- Supabase helpers for SSR/client auth plumbing
+- Spotify client-credentials lookup
 - Dropbox OAuth helpers
-- Spotify artist/release lookup
+- Supabase SSR/client helpers
 
-## Quick Start
+## Local Setup
 
 1. Install dependencies:
 
@@ -46,62 +75,96 @@ There is a nested `witching-hour-app/` directory in this repo that contains an o
 npm install
 ```
 
-2. Create `.env.local` and add the variables you need for the surfaces you are testing.
+2. Create a local env file:
 
-3. Start the app:
+```bash
+cp .env.example .env.local
+```
+
+3. Fill in only the integrations you need for the surface you are testing. The app can boot without every integration configured.
+
+4. Start the dev server:
 
 ```bash
 npm run dev
 ```
 
-4. Review the main paths:
+5. Verify the current runtime routes:
 
 ```text
 http://localhost:3000/
 http://localhost:3000/feed
 http://localhost:3000/token
-http://localhost:3000/blog
+http://localhost:3000/stream
+http://localhost:3000/api/check-access
+http://localhost:3000/api/stream/chaturbate
+http://localhost:3000/.well-known/farcaster.json
 ```
+
+## Tooling Notes
+
+- The repo includes [`.tool-versions`](/home/fletchervaughn/witching-hour-app/.tool-versions) with `golang 1.26.1`.
+- Go is not required for basic Next.js development in this repo. Treat it as a pinned auxiliary toolchain, not a prerequisite for booting the app.
 
 ## Scripts
 
-- `npm run dev` starts Next.js locally
-- `npm run build` creates a production build
-- `npm run start` runs the production server
-- `npm run lint` runs ESLint
-- `npm run send:test-tx` sends a test transaction using the local script
-- `npm run verify:builder-code` verifies Base builder-code wiring
-- `npm run deploy:webhook` deploys the Cloudflare Worker in `workers/github-webhook`
+- `npm run dev`
+  Start Next.js locally.
+- `npm run build`
+  Create a production build.
+- `npm run start`
+  Run the production server.
+- `npm run lint`
+  Run ESLint.
+- `npm run send:test-tx`
+  Execute [`scripts/send-test-tx.mjs`](/home/fletchervaughn/witching-hour-app/scripts/send-test-tx.mjs).
+- `npm run verify:builder-code`
+  Execute [`scripts/verify-builder-code.mjs`](/home/fletchervaughn/witching-hour-app/scripts/verify-builder-code.mjs).
+- `npm run deploy:webhook`
+  Deploy the Cloudflare Worker from [`workers/github-webhook/`](/home/fletchervaughn/witching-hour-app/workers/github-webhook).
 
 ## Environment Variables
 
-Only some features require secrets. The app can boot without every integration configured.
+Only a subset of features require secrets. Start with `.env.example` and keep `.env.local` out of version control.
 
-### Core app / miniapp
+### Base and wallet access
+
+- `NEXT_PUBLIC_BASE_BUILDER_CODE`
+  Builder code override used in [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts).
+- `BASE_BUILDER_CODE`
+  Present in `.env.example`; useful for scripts or future consolidation, but the current wallet code reads the `NEXT_PUBLIC_` variant.
+- `NEXT_PUBLIC_BASESCAN_API`
+  Used by Base activity lookups in the `src/` tree.
+- `BASE_RPC_URL`
+  Optional RPC override for local scripts.
+- `BASE_TEST_SENDER_PRIVATE_KEY` or `PRIVATE_KEY`
+  Used by the send-test-transaction script.
+
+### AI route
+
+- `AZURE_AI_INFERENCE_BASE_URL`
+- `AZURE_OPENAI_BASE_URL`
+- `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_MODEL`
+- `AZURE_AI_PROJECT_ENDPOINT`
+- `AZURE_OPENAI_API_FLAVOR`
+
+Compatibility aliases:
+
+- `OPENAI_BASE_URL`
+- `OPENAI_API_KEY`
+
+The current [`app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/app/api/ai/route.ts) can call either the Azure OpenAI-compatible `responses` API or the Azure AI inference `chat/completions` API. It still requires a deployed model name on the target resource.
+
+### Farcaster and miniapp metadata
 
 - `NEXT_PUBLIC_APP_URL`
-  - Used for the Farcaster manifest base URL. Defaults to `https://app.witchinghourmac.com`.
-- `NEXT_PUBLIC_BASE_BUILDER_CODE`
-  - Optional override for the default builder code baked into `src/lib/wallet.ts`.
 - `BASE_BUILDER_OWNER_ADDRESS`
-  - Optional override for `/.well-known/farcaster.json`.
 - `FARCASTER_HEADER`
 - `FARCASTER_PAYLOAD`
 - `FARCASTER_SIGNATURE`
 
-### Wallet / chain inspection
-
-- `NEXT_PUBLIC_BASESCAN_API`
-  - Used by `src/lib/activity.ts` to fetch recent token transfers.
-
-### Supabase
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-Note: the current code reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` in the helpers under `src/utils/supabase/*`.
+These drive the live miniapp manifest and metadata flow.
 
 ### Dropbox OAuth
 
@@ -116,55 +179,63 @@ Note: the current code reads `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` in t
 - `SPOTIFY_ARTIST_ID`
 - `SPOTIFY_MARKET`
 
-If the Spotify variables are absent, the homepage spotlight renders its fallback state instead of failing the whole page.
+### Supabase and auth helpers
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_PRIVY_APP_ID`
+- `PRIVY_APP_SECRET`
 
 ### CDP test route
 
 - `CDP_API_KEY_ID`
 - `CDP_API_KEY_SECRET`
 
-These are only required for the read-only CDP test route at `/api/cdp/test`.
+### Stream surface
 
-### Local scripts
+- `STREAM_CHATURBATE_USERNAME`
+- `STREAM_CHATURBATE_EVENTS_API_URL`
+- `STREAM_CHATURBATE_PUBLIC_EVENTS_API_URL`
+- `STREAM_CHATURBATE_STATS_API_URL`
+- `STREAM_CHATURBATE_SECONDARY_USERNAME`
+- `STREAM_CHATURBATE_SECONDARY_EVENTS_API_URL`
+- `STREAM_CHATURBATE_SECONDARY_PUBLIC_EVENTS_API_URL`
+- `STREAM_CHATURBATE_SECONDARY_STATS_API_URL`
 
-- `BASE_RPC_URL`
-- `BASE_TEST_SENDER_PRIVATE_KEY` or `PRIVATE_KEY`
-
-These are used by `scripts/send-test-tx.mjs`.
+Only public-safe fields are returned by `/api/stream/chaturbate`. The tokenized private endpoint URLs remain server-side only.
 
 ## Architecture Notes
 
-### Routing
+### Runtime flow
 
-- `src/app/layout.tsx` injects Base miniapp metadata into the document head.
-- `src/app/.well-known/farcaster.json/route.ts` returns the Farcaster/Base manifest.
-- `src/app/feed/page.tsx` delegates to a client-only shell to avoid SSR/hydration issues with wallet code.
+- [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
+  Base miniapp metadata.
+- [`src/app/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/page.tsx)
+  Main Witching Hour landing page.
+- [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
+  Reads hOUR token balance on Base and returns access state.
+- [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
+  Enforces token gating before sending a prompt to Azure OpenAI-compatible infrastructure.
+- [`src/app/.well-known/farcaster.json/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/.well-known/farcaster.json/route.ts)
+  Manifest endpoint for Farcaster/Base.
+- [`src/app/stream/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/stream/page.tsx)
+  Server-rendered public-safe stream profile page.
+- [`src/app/api/stream/chaturbate/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/stream/chaturbate/route.ts)
+  Public-safe JSON mirror of stream configuration.
+- [`src/app/api/posts/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/posts/route.ts)
+  SQLite-backed posts API.
+- [`src/lib/db.ts`](/home/fletchervaughn/witching-hour-app/src/lib/db.ts)
+  Opens `data/db.sqlite` and ensures the `posts` table exists.
+- [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
+  Base-only wagmi config with builder-code attribution.
 
-### Wallet configuration
+## Working Rules
 
-- `src/lib/wallet.ts` configures wagmi for Base only.
-- Connectors:
-  - injected wallet
-  - Base Account
-- ERC-8021 attribution is enabled via `dataSuffix`.
-
-### Feed storage
-
-- `src/lib/db.ts` opens `data/db.sqlite`.
-- `src/app/api/posts/route.ts` exposes a minimal read/write API over the `posts` table.
-- This is local SQLite storage, not a multi-user production backend yet.
-
-### Spotify integration
-
-- `src/lib/spotify.ts` uses Spotify client credentials.
-- `src/app/api/spotify/highlight/route.ts` wraps the lookup in a safe JSON response.
-
-## Operational Notes
-
-- Do not add a second router tree. The active app router is `src/app`.
-- Prefer moving useful reference code into `src/components` rather than building against the legacy top-level `components/` tree.
-- Keep secrets in `.env.local` locally and in your deployment platform for production.
-- `data/db.sqlite` is a local file-backed store. Be careful about assumptions when deploying to ephemeral environments.
+- Do not reintroduce a second app router tree.
+- Be careful with assumptions about persistence. `data/db.sqlite` is local file-backed storage.
+- Review `git status` before edits; this repository often has unrelated work in progress.
 
 ## Documentation Map
 
