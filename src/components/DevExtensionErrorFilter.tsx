@@ -2,15 +2,22 @@
 
 import { useEffect } from 'react'
 
-const TARGET_MESSAGE = 'setExternalProvider is not a function'
+const TARGET_MESSAGES = [
+  'setExternalProvider is not a function',
+  'destroyTonkeeper is not a function',
+] as const
 
 function isKnownExtensionProviderError(value: unknown) {
   if (!(value instanceof Error)) {
     return false
   }
 
-  const messageMatches = value.message.includes(TARGET_MESSAGE)
-  const stackMatches = value.stack?.includes('chrome-extension://') ?? false
+  const messageMatches = TARGET_MESSAGES.some((message) =>
+    value.message.includes(message),
+  )
+  const stack = value.stack ?? ''
+  const stackMatches =
+    stack.includes('chrome-extension://') || stack.includes('TonProvider')
 
   return messageMatches || stackMatches
 }
@@ -30,7 +37,7 @@ export function DevExtensionErrorFilter() {
         return
       }
 
-      if (event.message.includes(TARGET_MESSAGE)) {
+      if (TARGET_MESSAGES.some((message) => event.message.includes(message))) {
         event.preventDefault()
         event.stopImmediatePropagation()
       }
