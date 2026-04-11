@@ -48,11 +48,15 @@ The runtime imports heavily from `src/` via the `@/*` alias.
 - [`src/components/WalletStatus.tsx`](/home/fletchervaughn/witching-hour-app/src/components/WalletStatus.tsx)
 - [`src/components/AIBox.tsx`](/home/fletchervaughn/witching-hour-app/src/components/AIBox.tsx)
 - [`src/components/providers/AppProviders.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/AppProviders.tsx)
+- [`src/components/providers/ProvidersBoundary.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/ProvidersBoundary.tsx)
+- [`src/components/base/SignInWithBasePanelShell.tsx`](/home/fletchervaughn/witching-hour-app/src/components/base/SignInWithBasePanelShell.tsx)
 
 ### Libraries
 
 - [`src/lib/azure-openai.ts`](/home/fletchervaughn/witching-hour-app/src/lib/azure-openai.ts)
   Azure OpenAI-compatible client and request helper.
+- [`src/lib/web-grounding.ts`](/home/fletchervaughn/witching-hour-app/src/lib/web-grounding.ts)
+  Search and fetch grounding used by the token-gated AI route.
 - [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
   Base-only wagmi configuration.
 - [`src/lib/db.ts`](/home/fletchervaughn/witching-hour-app/src/lib/db.ts)
@@ -69,10 +73,10 @@ The runtime imports heavily from `src/` via the `@/*` alias.
 After documentation-sensitive code changes, verify:
 
 1. `npm run dev` starts cleanly.
-2. `/` renders wallet status and the AI box.
-3. `/feed` and `/stream` render.
+2. `/` renders the hero, feed/token previews, and the Base sign-in panel shell.
+3. `/feed`, `/token`, and `/stream` render.
 4. `/.well-known/farcaster.json` returns JSON.
-5. `/api/check-access` and `/api/stream/chaturbate` respond with JSON.
+5. `/api/check-access`, `/api/posts`, and `/api/stream/chaturbate` respond with JSON.
 
 ## Cleanup Targets
 

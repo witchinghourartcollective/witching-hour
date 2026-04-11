@@ -1,8 +1,36 @@
 # Witching Hour App
 
-Witching Hour is a Next.js app that combines wallet-aware UI, Base token gating, AI access checks, a stream surface, and several integration routes for Dropbox, Spotify, and Farcaster/Base miniapp metadata.
+Witching Hour is a Next.js app for a Base-native media surface: wallet sign-in, token-gated access checks, grounded AI responses, a stream page, a small SQLite-backed posts API, and integration routes for Dropbox, Spotify, and Farcaster/Base miniapp metadata.
 
-The repository now uses a single App Router tree under [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app). Older duplicate router structure has been removed so the docs and runtime match again.
+The active runtime lives under [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app). There is still legacy material elsewhere in the repo, but if you are changing product behavior, start in `src/`.
+
+## Start Here
+
+If you only need the app running locally:
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Then verify:
+
+```text
+http://localhost:3000/
+http://localhost:3000/feed
+http://localhost:3000/token
+http://localhost:3000/stream
+http://localhost:3000/.well-known/farcaster.json
+```
+
+Feature-specific env minimums:
+
+- Wallet and Base sign-in UI: no secret required for basic rendering; set `NEXT_PUBLIC_BASE_BUILDER_CODE` and `NEXT_PUBLIC_BASESCAN_API` if you need attribution and Base activity lookups.
+- AI route: one of the Azure/OpenAI or qBraid env groups documented below plus a deployed model name.
+- Dropbox OAuth: `DROPBOX_APP_KEY`, `DROPBOX_APP_SECRET`, `DROPBOX_REDIRECT_URI`.
+- Spotify highlight: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_ARTIST_ID`.
+- Stream surface: the `STREAM_CHATURBATE_*` variables.
 
 ## Runtime Truth
 
@@ -32,12 +60,14 @@ Important supporting runtime files:
 
 - [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
   Rewrites `stream.witchinghourmac.com/` to `/stream`.
-- [`src/components/WalletStatus.tsx`](/home/fletchervaughn/witching-hour-app/src/components/WalletStatus.tsx)
-  Wallet connection status used by the root page.
-- [`src/components/AIBox.tsx`](/home/fletchervaughn/witching-hour-app/src/components/AIBox.tsx)
-  Token-gated AI surface used by the root page.
+- [`src/components/base/SignInWithBasePanelShell.tsx`](/home/fletchervaughn/witching-hour-app/src/components/base/SignInWithBasePanelShell.tsx)
+  Client-side loader for the Base sign-in panel shown on the root page.
+- [`src/components/providers/ProvidersBoundary.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/ProvidersBoundary.tsx)
+  Bridges the server-rendered layout into the app's wagmi/react-query provider tree.
 - [`src/lib/azure-openai.ts`](/home/fletchervaughn/witching-hour-app/src/lib/azure-openai.ts)
-  Azure OpenAI-compatible client setup for `/api/ai`.
+  AI provider configuration and transport helpers.
+- [`src/lib/web-grounding.ts`](/home/fletchervaughn/witching-hour-app/src/lib/web-grounding.ts)
+  Web search/fetch grounding flow used by `/api/ai`.
 
 ## Repo Layout
 
@@ -69,37 +99,11 @@ Important supporting runtime files:
 
 ## Local Setup
 
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Create a local env file:
-
-```bash
-cp .env.example .env.local
-```
-
+1. Install dependencies with `npm install`.
+2. Copy `.env.example` to `.env.local`.
 3. Fill in only the integrations you need for the surface you are testing. The app can boot without every integration configured.
-
-4. Start the dev server:
-
-```bash
-npm run dev
-```
-
-5. Verify the current runtime routes:
-
-```text
-http://localhost:3000/
-http://localhost:3000/feed
-http://localhost:3000/token
-http://localhost:3000/stream
-http://localhost:3000/api/check-access
-http://localhost:3000/api/stream/chaturbate
-http://localhost:3000/.well-known/farcaster.json
-```
+4. Start the dev server with `npm run dev`.
+5. Verify the routes listed in the Start Here section plus `/api/check-access` and `/api/stream/chaturbate` if you are touching API behavior.
 
 ## Tooling Notes
 
@@ -148,13 +152,22 @@ Only a subset of features require secrets. Start with `.env.example` and keep `.
 - `AZURE_OPENAI_MODEL`
 - `AZURE_AI_PROJECT_ENDPOINT`
 - `AZURE_OPENAI_API_FLAVOR`
+- `AI_PROVIDER`
 
 Compatibility aliases:
 
 - `OPENAI_BASE_URL`
 - `OPENAI_API_KEY`
 
-The current [`app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/app/api/ai/route.ts) can call either the Azure OpenAI-compatible `responses` API or the Azure AI inference `chat/completions` API. It still requires a deployed model name on the target resource.
+qBraid-compatible options:
+
+- `QBRAID_BASE_URL`
+- `QBRAID_API_KEY`
+- `QBRAID_MODEL`
+
+The current [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts) enforces hOUR token gating first, then delegates generation to [`src/lib/web-grounding.ts`](/home/fletchervaughn/witching-hour-app/src/lib/web-grounding.ts). Grounding can call the Azure OpenAI-compatible `responses` API, the Azure AI inference `chat/completions` API, or qBraid, but each path still needs a deployed model name on the target resource.
+
+To use a qBraid A100 for the WHM AI surface, keep the website on its normal host and point only the AI route at qBraid. Set `AI_PROVIDER=qbraid`, `QBRAID_BASE_URL=https://api.qbraid.com/api`, `QBRAID_API_KEY`, and `QBRAID_MODEL` in `.env.local`. That lets `/api/ai` use qBraid for model execution while the public Next.js app continues to run where it already belongs.
 
 ### Farcaster and miniapp metadata
 
@@ -213,11 +226,11 @@ Only public-safe fields are returned by `/api/stream/chaturbate`. The tokenized 
 - [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
   Base miniapp metadata.
 - [`src/app/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/page.tsx)
-  Main Witching Hour landing page.
+  Main Witching Hour landing page with navigation, Spotify spotlight, feed preview, token preview, and the Base sign-in shell.
 - [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
   Reads hOUR token balance on Base and returns access state.
 - [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
-  Enforces token gating before sending a prompt to Azure OpenAI-compatible infrastructure.
+  Enforces token gating before dispatching grounded generation.
 - [`src/app/.well-known/farcaster.json/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/.well-known/farcaster.json/route.ts)
   Manifest endpoint for Farcaster/Base.
 - [`src/app/stream/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/stream/page.tsx)
@@ -230,6 +243,8 @@ Only public-safe fields are returned by `/api/stream/chaturbate`. The tokenized 
   Opens `data/db.sqlite` and ensures the `posts` table exists.
 - [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
   Base-only wagmi config with builder-code attribution.
+- [`src/components/providers/AppProviders.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/AppProviders.tsx)
+  Wagmi and React Query providers used by the runtime boundary.
 
 ## Working Rules
 

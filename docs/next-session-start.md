@@ -14,18 +14,21 @@ Use this as the shortest reliable handoff.
 1. Run `npm run dev`.
 2. Open `/`.
 3. Open `/feed`.
-4. Open `/stream`.
-5. Review `git status` before touching anything because unrelated product work is often present.
+4. Open `/token`.
+5. Open `/stream`.
+6. Review `git status` before touching anything because unrelated product work is often present.
 
 ## Files That Matter First
 
 - [`src/app/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/page.tsx)
 - [`src/app/feed/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/feed/page.tsx)
+- [`src/app/token/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/token/page.tsx)
 - [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
 - [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
 - [`src/app/stream/page.tsx`](/home/fletchervaughn/witching-hour-app/src/app/stream/page.tsx)
 - [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
 - [`src/lib/azure-openai.ts`](/home/fletchervaughn/witching-hour-app/src/lib/azure-openai.ts)
+- [`src/lib/web-grounding.ts`](/home/fletchervaughn/witching-hour-app/src/lib/web-grounding.ts)
 - [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
 - [`src/lib/stream.ts`](/home/fletchervaughn/witching-hour-app/src/lib/stream.ts)
 
@@ -33,7 +36,8 @@ Use this as the shortest reliable handoff.
 
 - `src/app` is now the active router.
 - `data/db.sqlite` backs the posts API.
-- Azure OpenAI env vars are needed only for the AI route.
+- The AI route is token-gated and currently uses grounded web lookup before model generation.
+- Azure/OpenAI or qBraid env vars are needed only for the AI route.
 - Stream env vars are needed only for the stream surface, and only public-safe fields are exposed from the public route.
 
 ## Likely Next Work
