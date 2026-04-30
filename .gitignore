@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# local runtime data
+/data/db.sqlite
+
 # production
 /build
 
@@ -76,6 +79,12 @@ skills-lock.json
 # local sibling projects
 Witching Hour Music/
 witching hour/
+my-tac-project/
+witching-hour-app/
 
 # local exports
 whm-export.tar.gz
+
+# local tool state
+.codex
+.playwright-mcp/

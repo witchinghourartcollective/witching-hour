@@ -4,7 +4,7 @@ This file is the practical map of the codebase as it exists today.
 
 ## Current Runtime
 
-The current built app is using [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app).
+The tracked production app is using [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app).
 
 ### Served pages
 
@@ -27,8 +27,6 @@ The current built app is using [`src/app/`](/home/fletchervaughn/witching-hour-a
   Checks whether a wallet holds the hOUR token.
 - [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
   Token-gated AI response route.
-- [`src/app/api/stream/chaturbate/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/stream/chaturbate/route.ts)
-  Returns public-safe primary and secondary stream profile data.
 - [`src/app/.well-known/farcaster.json/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/.well-known/farcaster.json/route.ts)
   Base/Farcaster manifest endpoint.
 
@@ -36,7 +34,7 @@ The current built app is using [`src/app/`](/home/fletchervaughn/witching-hour-a
 
 - [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
   Layout, global styles, providers boundary, and miniapp metadata.
-- [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
+- [`proxy.ts`](/home/fletchervaughn/witching-hour-app/proxy.ts)
   Rewrites the stream host root to `/stream`.
 
 ## Shared Source Used By The Runtime
@@ -57,10 +55,12 @@ The runtime imports heavily from `src/` via the `@/*` alias.
   Azure OpenAI-compatible client and request helper.
 - [`src/lib/web-grounding.ts`](/home/fletchervaughn/witching-hour-app/src/lib/web-grounding.ts)
   Search and fetch grounding used by the token-gated AI route.
+- [`src/lib/hour-token.ts`](/home/fletchervaughn/witching-hour-app/src/lib/hour-token.ts)
+  Base hOUR balance lookup with RPC timeout protection.
 - [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
   Base-only wagmi configuration.
 - [`src/lib/db.ts`](/home/fletchervaughn/witching-hour-app/src/lib/db.ts)
-  SQLite posts store used by the parallel `src/app` API.
+  SQLite posts store used by the tracked `src/app` API.
 
 ## Known Constraints
 
@@ -76,7 +76,7 @@ After documentation-sensitive code changes, verify:
 2. `/` renders the hero, feed/token previews, and the Base sign-in panel shell.
 3. `/feed`, `/token`, and `/stream` render.
 4. `/.well-known/farcaster.json` returns JSON.
-5. `/api/check-access`, `/api/posts`, and `/api/stream/chaturbate` respond with JSON.
+5. `/api/check-access`, `/api/posts`, and `/api/ai` respond with JSON or the expected text response.
 
 ## Cleanup Targets
 

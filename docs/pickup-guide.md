@@ -22,14 +22,14 @@ The project is trying to combine:
 
 - Token gating logic in [`src/app/api/check-access/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/check-access/route.ts)
 - AI routing in [`src/app/api/ai/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/ai/route.ts)
-- Stream host rewrite in [`middleware.ts`](/home/fletchervaughn/witching-hour-app/middleware.ts)
+- Stream host rewrite in [`proxy.ts`](/home/fletchervaughn/witching-hour-app/proxy.ts)
 - Base-only wallet configuration in [`src/lib/wallet.ts`](/home/fletchervaughn/witching-hour-app/src/lib/wallet.ts)
 - Miniapp metadata in [`src/app/layout.tsx`](/home/fletchervaughn/witching-hour-app/src/app/layout.tsx)
 
 ## What Still Needs Care
 
 - The public stream route was previously exposing tokenized private endpoints and now only exposes public-safe fields. Any previously exposed tokens should be rotated.
-- The feed/posts flow is still backed by local SQLite.
+- The feed/posts flow is still backed by local SQLite and should be treated as local runtime state, not shared content truth.
 - The repo still carries legacy directories that can confuse new work.
 
 ## Guardrails
