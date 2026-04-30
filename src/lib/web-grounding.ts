@@ -420,7 +420,7 @@ async function callResponsesApi(body: Record<string, unknown>) {
   const { apiKey, baseUrl } = getAzureOpenAIConfig();
 
   if (!apiKey) {
-    throw new Error("Missing AZURE_OPENAI_API_KEY or OPENAI_API_KEY.");
+    throw new Error("Missing AZURE_OPENAI_API_KEY, OPENAI_API_KEY, or QBRAID_API_KEY.");
   }
 
   if (!baseUrl) {
@@ -468,7 +468,7 @@ export async function generateGroundedWebResponse(prompt: string): Promise<strin
   }
 
   if (!model) {
-    throw new Error("Missing AZURE_OPENAI_MODEL.");
+    throw new Error("Missing AZURE_OPENAI_MODEL or QBRAID_MODEL.");
   }
 
   const directUrls = extractUrls(trimmedPrompt).slice(0, 3);

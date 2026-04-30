@@ -5,9 +5,15 @@ import { useEffect } from 'react'
 const TARGET_MESSAGES = [
   'setExternalProvider is not a function',
   'destroyTonkeeper is not a function',
+  'instance.destroyTonkeeper is not a function',
+  'Attempting to use a disconnected port object',
 ] as const
 
 function isKnownExtensionProviderError(value: unknown) {
+  if (typeof value === 'string') {
+    return TARGET_MESSAGES.some((message) => value.includes(message))
+  }
+
   if (!(value instanceof Error)) {
     return false
   }
@@ -37,14 +43,23 @@ export function DevExtensionErrorFilter() {
         return
       }
 
-      if (TARGET_MESSAGES.some((message) => event.message.includes(message))) {
+      const isKnownNoise = TARGET_MESSAGES.some((message) =>
+        event.message.includes(message),
+      )
+
+      if (isKnownNoise || event.filename?.startsWith('chrome-extension://')) {
         event.preventDefault()
         event.stopImmediatePropagation()
       }
     }
 
     const onUnhandledRejection = (event: PromiseRejectionEvent) => {
-      if (!isKnownExtensionProviderError(event.reason)) {
+      const isExtensionRejection =
+        isKnownExtensionProviderError(event.reason) ||
+        (event.reason instanceof Error &&
+          (event.reason.stack?.includes('chrome-extension://') ?? false))
+
+      if (!isExtensionRejection) {
         return
       }
 

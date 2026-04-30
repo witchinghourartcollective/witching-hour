@@ -22,7 +22,18 @@ export async function POST(req: Request) {
       return new Response("Prompt is required.", { status: 400 });
     }
 
-    const balance = await getHourBalance(address);
+    let balance: bigint;
+
+    try {
+      balance = await getHourBalance(address);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to verify hOUR token access.";
+
+      return new Response(message, { status: 503 });
+    }
 
     if (balance <= 0n) {
       return new Response("ACCESS DENIED — HOLD hOUR", { status: 403 });

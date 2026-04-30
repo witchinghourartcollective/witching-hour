@@ -5,15 +5,57 @@ type BaseScanTransfer = {
   value: string;
 };
 
+const ETHERSCAN_V2_BASE_URL = "https://api.etherscan.io/v2/api";
+const BASE_CHAIN_ID = 8453;
+
 export async function fetchTransfers(address: string) {
   const apiKey = process.env.NEXT_PUBLIC_BASESCAN_API;
 
-  const url = `https://api.basescan.org/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`;
+  if (!apiKey) {
+    return [];
+  }
 
-  const res = await fetch(url);
-  const data = (await res.json()) as { result?: BaseScanTransfer[] };
+  const url = new URL(ETHERSCAN_V2_BASE_URL);
+  url.searchParams.set("chainid", String(BASE_CHAIN_ID));
+  url.searchParams.set("module", "account");
+  url.searchParams.set("action", "tokentx");
+  url.searchParams.set("address", address);
+  url.searchParams.set("startblock", "0");
+  url.searchParams.set("endblock", "99999999");
+  url.searchParams.set("sort", "desc");
+  url.searchParams.set("apikey", apiKey);
 
-  if (!data.result || !Array.isArray(data.result)) {
+  const res = await fetch(url, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error(`BaseScan request failed with status ${res.status}.`);
+  }
+
+  const data = (await res.json()) as {
+    message?: string;
+    result?: BaseScanTransfer[] | string;
+    status?: string;
+  };
+
+  if (typeof data.result === "string") {
+    const normalized = data.result.toLowerCase();
+    if (normalized.includes("no transactions found")) {
+      return [];
+    }
+
+    if (
+      normalized.includes("free api access is not supported for this chain") ||
+      normalized.includes("deprecated v1 endpoint")
+    ) {
+      return [];
+    }
+
+    throw new Error(data.result);
+  }
+
+  if (!Array.isArray(data.result)) {
     return [];
   }
 

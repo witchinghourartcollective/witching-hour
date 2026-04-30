@@ -51,12 +51,15 @@ export function extractText(payload: unknown): string {
 
 export function getAzureOpenAIConfig() {
   const baseUrl = process.env.AZURE_OPENAI_BASE_URL ?? process.env.OPENAI_BASE_URL
-  const apiKey = process.env.AZURE_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY
-  const model = process.env.AZURE_OPENAI_MODEL
+  const apiKey =
+    process.env.AZURE_OPENAI_API_KEY ?? process.env.OPENAI_API_KEY ?? process.env.QBRAID_API_KEY
+  const model = process.env.AZURE_OPENAI_MODEL ?? process.env.QBRAID_MODEL
   const projectEndpoint = process.env.AZURE_AI_PROJECT_ENDPOINT
   const inferenceBaseUrl =
     process.env.AZURE_AI_INFERENCE_BASE_URL ?? deriveInferenceBaseUrl(projectEndpoint)
-  const apiFlavor = process.env.AZURE_OPENAI_API_FLAVOR ?? 'responses'
+  const apiFlavor =
+    process.env.AI_PROVIDER ?? process.env.AZURE_OPENAI_API_FLAVOR ?? 'responses'
+  const qbraidBaseUrl = process.env.QBRAID_BASE_URL
 
   return {
     apiFlavor,
@@ -65,6 +68,7 @@ export function getAzureOpenAIConfig() {
     inferenceBaseUrl: inferenceBaseUrl ? normalizeBaseUrl(inferenceBaseUrl) : '',
     model,
     projectEndpoint,
+    qbraidBaseUrl: qbraidBaseUrl ? normalizeBaseUrl(qbraidBaseUrl) : '',
   }
 }
 
@@ -112,22 +116,49 @@ async function callInferenceApi(
   })
 }
 
+async function callQbraidChatApi(
+  qbraidBaseUrl: string,
+  apiKey: string,
+  model: string,
+  input: string,
+) {
+  return fetch(`${qbraidBaseUrl}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': apiKey,
+    },
+    body: JSON.stringify({
+      model,
+      prompt: `${DEFAULT_SYSTEM_PROMPT}\n\nUser: ${input}`,
+      stream: false,
+    }),
+  })
+}
+
 export async function generateAzureOpenAIResponse(input: string): Promise<string> {
-  const { apiFlavor, apiKey, baseUrl, inferenceBaseUrl, model } = getAzureOpenAIConfig()
+  const { apiFlavor, apiKey, baseUrl, inferenceBaseUrl, model, qbraidBaseUrl } =
+    getAzureOpenAIConfig()
 
   if (!apiKey) {
-    throw new Error('Missing AZURE_OPENAI_API_KEY or OPENAI_API_KEY.')
+    throw new Error('Missing AZURE_OPENAI_API_KEY, OPENAI_API_KEY, or QBRAID_API_KEY.')
   }
 
   if (!model) {
-    throw new Error('Missing AZURE_OPENAI_MODEL.')
+    throw new Error('Missing AZURE_OPENAI_MODEL or QBRAID_MODEL.')
   }
 
   const useInferenceFirst = apiFlavor === 'inference'
+  const useQbraid = apiFlavor === 'qbraid'
   let response: Response | null = null
   let payload: unknown = null
 
-  if (useInferenceFirst) {
+  if (useQbraid) {
+    if (qbraidBaseUrl) {
+      response = await callQbraidChatApi(qbraidBaseUrl, apiKey, model, input)
+      payload = await response.json().catch(() => null)
+    }
+  } else if (useInferenceFirst) {
     if (inferenceBaseUrl) {
       response = await callInferenceApi(inferenceBaseUrl, apiKey, model, input)
       payload = await response.json().catch(() => null)
@@ -139,6 +170,7 @@ export async function generateAzureOpenAIResponse(input: string): Promise<string
 
   const canFallbackToInference =
     !useInferenceFirst &&
+    !useQbraid &&
     inferenceBaseUrl &&
     response?.ok === false &&
     payload &&
@@ -150,9 +182,9 @@ export async function generateAzureOpenAIResponse(input: string): Promise<string
     typeof payload.error.message === 'string' &&
     payload.error.message.includes('Deployment')
 
-  if (!response && !baseUrl && !inferenceBaseUrl) {
+  if (!response && !baseUrl && !inferenceBaseUrl && !qbraidBaseUrl) {
     throw new Error(
-      'Missing Azure endpoint configuration. Set AZURE_OPENAI_BASE_URL/OPENAI_BASE_URL or AZURE_AI_INFERENCE_BASE_URL/AZURE_AI_PROJECT_ENDPOINT.',
+      'Missing AI endpoint configuration. Set AZURE_OPENAI_BASE_URL/OPENAI_BASE_URL, AZURE_AI_INFERENCE_BASE_URL/AZURE_AI_PROJECT_ENDPOINT, or QBRAID_BASE_URL.',
     )
   }
 
@@ -162,7 +194,7 @@ export async function generateAzureOpenAIResponse(input: string): Promise<string
   }
 
   if (!response) {
-    throw new Error('Azure request could not be initialized from the configured endpoints.')
+    throw new Error('AI request could not be initialized from the configured endpoints.')
   }
 
   if (!response.ok) {
@@ -184,6 +216,12 @@ export async function generateAzureOpenAIResponse(input: string): Promise<string
     extractText(payload) ||
     (payload &&
     typeof payload === 'object' &&
+    'content' in payload &&
+    typeof payload.content === 'string'
+      ? payload.content
+      : '') ||
+    (payload &&
+    typeof payload === 'object' &&
     'choices' in payload &&
     Array.isArray(payload.choices) &&
     payload.choices[0] &&
@@ -197,7 +235,7 @@ export async function generateAzureOpenAIResponse(input: string): Promise<string
       : '')
 
   if (!text.trim()) {
-    throw new Error('Azure OpenAI returned an empty response.')
+    throw new Error('AI provider returned an empty response.')
   }
 
   return text

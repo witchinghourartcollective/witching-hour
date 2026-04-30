@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
-import { useAccount, useChainId, useReadContract, useSwitchChain } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useReadContract,
+  useSimulateContract,
+  useSwitchChain,
+} from "wagmi";
 import { base } from "wagmi/chains";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
 import { TransactionButton } from "@/components/wallet/TransactionButton";
@@ -48,11 +54,22 @@ export function FeedClient() {
       enabled: Boolean(address),
     },
   });
-  const { data: tradingEnabled } = useReadContract({
+  const isOnBase = chainId === base.id;
+  const hasEnoughHour = typeof hourBalance === "bigint" && hourBalance >= tipAmount;
+  const {
+    error: transferSimulationError,
+    isLoading: isCheckingTransferability,
+  } = useSimulateContract({
     address: HOUR_TOKEN.address,
     abi: HOUR_TOKEN.abi,
-    functionName: "tradingEnabled",
+    functionName: "transfer",
+    args: tipCall.args,
     chainId: base.id,
+    account: address,
+    query: {
+      enabled: Boolean(address && isOnBase && hasEnoughHour),
+      retry: false,
+    },
   });
 
   useEffect(() => {
@@ -167,24 +184,27 @@ export function FeedClient() {
     }
   }
 
-  const isOnBase = chainId === base.id;
   const displayNetwork = isOnBase ? "Base" : `Chain ${chainId}`;
-  const hasEnoughHour = typeof hourBalance === "bigint" && hourBalance >= tipAmount;
-  const isTradingLive = tradingEnabled === true;
   const formattedHourBalance =
     typeof hourBalance === "bigint"
       ? formatUnits(hourBalance, HOUR_TOKEN.decimals)
       : null;
+  const transferabilityMessage =
+    transferSimulationError instanceof Error
+      ? transferSimulationError.message
+      : "hOUR transfer preflight failed.";
   const tipDisabledReason = !isConnected
     ? null
     : !isOnBase
       ? "Switch to Base before sending hOUR."
-      : tradingEnabled !== true
-        ? "hOUR transfers are not live yet. The token contract still has trading disabled on Base."
       : typeof hourBalance !== "bigint"
         ? "Loading hOUR balance..."
-        : !hasEnoughHour
+      : !hasEnoughHour
           ? `This wallet holds ${formattedHourBalance} ${HOUR_TOKEN.symbol}. You need at least 1 ${HOUR_TOKEN.symbol} to send a tip.`
+        : isCheckingTransferability
+          ? "Checking hOUR transfer route..."
+        : transferSimulationError
+          ? transferabilityMessage
           : null;
 
   return (
@@ -208,7 +228,22 @@ export function FeedClient() {
             <div className="mt-4 space-y-3 text-sm text-white/78">
               <p>Wallet: {isConnected && address ? address : "Not connected"}</p>
               <p>Network: {isConnected ? displayNetwork : "Awaiting sign-in"}</p>
-              <p>Trading: {isTradingLive ? "Live" : "Disabled"}</p>
+              <p>
+                Transfer route:{" "}
+                {!isConnected
+                  ? "Awaiting sign-in"
+                  : !isOnBase
+                    ? "Switch to Base"
+                    : typeof hourBalance !== "bigint"
+                      ? "Checking balance"
+                      : !hasEnoughHour
+                        ? "Insufficient hOUR"
+                        : isCheckingTransferability
+                          ? "Preflighting"
+                          : transferSimulationError
+                            ? "Blocked"
+                            : "Ready"}
+              </p>
               <p>
                 hOUR Balance:{" "}
                 {isConnected
