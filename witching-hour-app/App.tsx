@@ -13,6 +13,11 @@ import {
   View
 } from "react-native";
 import { Audio } from "expo-av";
+import {
+  HOUR_TOKEN_ADDRESS,
+  HOUR_TOKEN_CHAIN,
+  HOUR_TOKEN_METADATA,
+} from "../../../witching-hour-token/src/integration/hourToken";
 
 const ROOMS = [
   {
@@ -94,6 +99,14 @@ const ACCESS_COLUMNS = [
     status: "Selective / Edge"
   }
 ];
+
+const TOKEN_SUMMARY = [
+  { label: "Symbol", value: HOUR_TOKEN_METADATA.symbol },
+  { label: "Chain", value: HOUR_TOKEN_CHAIN.name },
+  { label: "Network", value: `Chain ${HOUR_TOKEN_CHAIN.id}` },
+  { label: "Contract", value: HOUR_TOKEN_ADDRESS },
+  { label: "Trading", value: "Not live yet" },
+] as const;
 
 const OFFERINGS = [
   {
@@ -420,6 +433,28 @@ export default function App() {
               </View>
             </View>
           </Animated.View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Token State</Text>
+          <Text style={styles.sectionCopy}>
+            The app now reads from the tracked token integration constants, so
+            the UI stays aligned with the token repo.
+          </Text>
+          <View style={styles.baseCard}>
+            <View style={styles.baseMeta}>
+              {TOKEN_SUMMARY.map((item) => (
+                <View key={item.label} style={styles.tokenRow}>
+                  <Text style={styles.baseLabel}>{item.label}</Text>
+                  <Text style={styles.baseStatus}>{item.value}</Text>
+                </View>
+              ))}
+              <Text style={styles.baseHint}>
+                Keep this state as the source of truth until liquidity is live
+                and `tradingEnabled` flips on-chain.
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -849,6 +884,9 @@ const styles = StyleSheet.create({
   },
   baseMeta: {
     gap: 6
+  },
+  tokenRow: {
+    gap: 4
   },
   baseLabel: {
     color: THEME.greenGlow,
