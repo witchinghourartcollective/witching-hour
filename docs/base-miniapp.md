@@ -38,7 +38,8 @@ If you change these files, verify the actual runtime manifest immediately becaus
 
 ## Validation Checklist
 
-1. Confirm the manifest route returns valid JSON once the `src/app` tree is intentionally wired into the active router.
+1. Confirm the manifest route returns valid JSON from the active `src/app` tree.
 2. Confirm `homeUrl`, `iconUrl`, and `ogImageUrl` point at the intended domain.
 3. Confirm `baseBuilder.ownerAddress` matches the intended owner.
 4. Confirm wallet attribution still uses the expected builder code.
+5. Confirm the live manifest and the code in `src/lib/wallet.ts` agree after any metadata change.

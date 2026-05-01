@@ -1,14 +1,14 @@
 # Witching Hour App
 
-Witching Hour App is a Next.js 16 / React 19 web app for the Witching Hour media surface. The active product runtime lives in [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app) and currently covers:
+Witching Hour App is a Next.js 16 / React 19 web app for the Witching Hour media surface. The production runtime lives in [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app) and currently covers:
 
 - Base wallet sign-in and hOUR token access checks
-- Grounded AI responses behind token gating
+- Token-gated AI responses with web grounding
 - Public pages for feed, token, blog, stream, and artist-specific surfaces
 - A local SQLite-backed posts API
-- Integration helpers for Dropbox OAuth, Spotify, Farcaster/Base metadata, and onchain activity
+- Integration helpers for Dropbox OAuth, Spotify, Base/Farcaster metadata, and onchain activity
 
-There is old scaffold material elsewhere in the repo. If you are changing current product behavior, start in `src/`.
+There is legacy scaffold material elsewhere in the repo. If you are changing current product behavior, start in `src/`.
 
 ## Quickstart
 
@@ -36,16 +36,26 @@ The app boots without every secret configured. Fill only the env groups required
 
 The current App Router surface is defined by files under [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app):
 
-- `/`
-- `/feed`
-- `/token`
-- `/blog`
-- `/rich-jewelz`
-- `/stream`
-- `/.well-known/farcaster.json`
-- `/api/ai`
-- `/api/check-access`
-- `/api/posts`
+- Pages
+  - `/`
+  - `/feed`
+  - `/token`
+  - `/blog`
+  - `/rich-jewelz`
+  - `/stream`
+- API and metadata
+  - `/.well-known/farcaster.json`
+  - `/api/ai`
+  - `/api/check-access`
+  - `/api/posts`
+  - `/api/base-auth/nonce`
+  - `/api/base-auth/verify`
+  - `/api/base-auth/shared`
+  - `/api/auth/dropbox`
+  - `/api/auth/dropbox/callback`
+  - `/api/spotify/highlight`
+  - `/api/stream/chaturbate`
+  - `/api/cdp/test`
 
 Important runtime files:
 
@@ -67,13 +77,9 @@ Important runtime files:
 ## Repo Layout
 
 - [`src/app/`](/home/fletchervaughn/witching-hour-app/src/app)
-  The only active router tree.
+  Active router tree.
 - [`src/components/`](/home/fletchervaughn/witching-hour-app/src/components)
-  Active component library used by the `src/app` runtime.
-- [`src/components/providers/AppProviders.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/AppProviders.tsx)
-  Wagmi and React Query providers.
-- [`src/components/providers/ProvidersBoundary.tsx`](/home/fletchervaughn/witching-hour-app/src/components/providers/ProvidersBoundary.tsx)
-  Server-to-client provider boundary used by the layout.
+  Active component library used by the runtime.
 - [`src/lib/`](/home/fletchervaughn/witching-hour-app/src/lib)
   Shared integration logic for wallet, AI, Spotify, Dropbox, stream data, onchain reads, and SQLite access.
 - [`data/db.sqlite`](/home/fletchervaughn/witching-hour-app/data/db.sqlite)
@@ -81,11 +87,11 @@ Important runtime files:
 - [`workers/github-webhook/`](/home/fletchervaughn/witching-hour-app/workers/github-webhook)
   Cloudflare Worker deployed by `npm run deploy:webhook`.
 - [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app)
-  Older nested duplicate scaffold. Treat as legacy unless you are intentionally cleaning it up.
+  Legacy nested scaffold. Do not treat it as production unless you are explicitly cleaning it up.
 - [`Witching Hour Music/`](/home/fletchervaughn/witching-hour-app/Witching%20Hour%20Music)
 - [`witching hour/`](/home/fletchervaughn/witching-hour-app/witching%20hour)
 - [`my-tac-project/`](/home/fletchervaughn/witching-hour-app/my-tac-project)
-  Extra historical experiments or duplicate app shells. Do not assume they represent the current product.
+  Historical experiments and duplicate shells.
 
 ## Stack
 
@@ -127,6 +133,13 @@ Important runtime files:
   Execute [`scripts/verify-builder-code.mjs`](/home/fletchervaughn/witching-hour-app/scripts/verify-builder-code.mjs).
 - `npm run deploy:webhook`
   Deploy the Cloudflare Worker from [`workers/github-webhook/`](/home/fletchervaughn/witching-hour-app/workers/github-webhook).
+
+## Operational Notes
+
+- The app boots without every secret configured. Fill only the env groups required for the feature you are testing.
+- `src/app` is the authoritative router tree. Avoid making product changes in the legacy nested scaffold.
+- `data/db.sqlite` is runtime storage. Do not treat it as source-of-truth content.
+- Keep stream- and token-adjacent secrets server-side and rotate anything that was previously exposed.
 
 ## Current Priorities
 

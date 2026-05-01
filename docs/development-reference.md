@@ -29,6 +29,22 @@ The tracked production app is using [`src/app/`](/home/fletchervaughn/witching-h
   Token-gated AI response route.
 - [`src/app/.well-known/farcaster.json/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/.well-known/farcaster.json/route.ts)
   Base/Farcaster manifest endpoint.
+- [`src/app/api/posts/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/posts/route.ts)
+  Local SQLite-backed posts API.
+- [`src/app/api/base-auth/nonce/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/base-auth/nonce/route.ts)
+  Base auth nonce endpoint.
+- [`src/app/api/base-auth/verify/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/base-auth/verify/route.ts)
+  Base auth verification endpoint.
+- [`src/app/api/auth/dropbox/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/auth/dropbox/route.ts)
+  Dropbox OAuth start endpoint.
+- [`src/app/api/auth/dropbox/callback/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/auth/dropbox/callback/route.ts)
+  Dropbox OAuth callback endpoint.
+- [`src/app/api/spotify/highlight/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/spotify/highlight/route.ts)
+  Spotify highlight lookup endpoint.
+- [`src/app/api/stream/chaturbate/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/stream/chaturbate/route.ts)
+  Stream data endpoint that should remain public-safe.
+- [`src/app/api/cdp/test/route.ts`](/home/fletchervaughn/witching-hour-app/src/app/api/cdp/test/route.ts)
+  CDP test route.
 
 ### Runtime support files
 
@@ -61,12 +77,21 @@ The runtime imports heavily from `src/` via the `@/*` alias.
   Base-only wagmi configuration.
 - [`src/lib/db.ts`](/home/fletchervaughn/witching-hour-app/src/lib/db.ts)
   SQLite posts store used by the tracked `src/app` API.
+- [`src/lib/stream.ts`](/home/fletchervaughn/witching-hour-app/src/lib/stream.ts)
+  Stream data normalization and public-safe shaping.
+- [`src/lib/spotify.ts`](/home/fletchervaughn/witching-hour-app/src/lib/spotify.ts)
+  Spotify integration helpers.
+- [`src/lib/dropbox.ts`](/home/fletchervaughn/witching-hour-app/src/lib/dropbox.ts)
+  Dropbox integration helpers.
+- [`src/lib/activity.ts`](/home/fletchervaughn/witching-hour-app/src/lib/activity.ts)
+  Onchain activity helpers.
 
 ## Known Constraints
 
 - `@/*` resolves to `src/*`, so runtime code and shared code live in the same tree.
 - [`data/db.sqlite`](/home/fletchervaughn/witching-hour-app/data/db.sqlite) is local file-backed storage only.
 - The nested [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app) directory is legacy and should not be confused with the top-level project root.
+- Keep stream and Base auth endpoints public-safe. Secrets and private upstream data should stay server-side.
 
 ## Verification Checklist
 
@@ -76,9 +101,10 @@ After documentation-sensitive code changes, verify:
 2. `/` renders the hero, feed/token previews, and the Base sign-in panel shell.
 3. `/feed`, `/token`, and `/stream` render.
 4. `/.well-known/farcaster.json` returns JSON.
-5. `/api/check-access`, `/api/posts`, and `/api/ai` respond with JSON or the expected text response.
+5. `/api/check-access`, `/api/posts`, `/api/ai`, `/api/base-auth/nonce`, and `/api/base-auth/verify` respond correctly.
+6. If the stream or OAuth surfaces changed, verify `/api/stream/chaturbate`, `/api/auth/dropbox`, and `/api/auth/dropbox/callback`.
 
 ## Cleanup Targets
 
 - Remove or archive the nested legacy [`witching-hour-app/`](/home/fletchervaughn/witching-hour-app/witching-hour-app) scaffold once no longer needed.
-- If Chaturbate private endpoints are still needed anywhere, move them behind an authenticated admin path and rotate any tokens that were previously exposed.
+- Keep any private upstream endpoints behind authenticated routes and rotate secrets if they were previously exposed.
