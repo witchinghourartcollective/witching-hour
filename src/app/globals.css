@@ -4,45 +4,59 @@
 
 :root {
   --bg: #08050d;
-  --bg-elevated: rgba(255, 255, 255, 0.06);
-  --panel: rgba(17, 10, 24, 0.82);
-  --border: rgba(255, 255, 255, 0.12);
+  --bg-elevated: rgba(255, 255, 255, 0.04);
+  --panel: rgba(13, 10, 24, 0.75);
+  --panel-hover: rgba(20, 15, 35, 0.85);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.16);
   --text: #f5ebff;
-  --muted: rgba(245, 235, 255, 0.72);
+  --muted: rgba(245, 235, 255, 0.65);
   --accent: #ff4fd8;
-  --accent-soft: rgba(255, 79, 216, 0.18);
+  --accent-soft: rgba(255, 79, 216, 0.14);
   --sigil: #8b5cf6;
   --ember: #ffb86c;
   --success: #8cf6c4;
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
     Palatino, "URW Palladio L", serif;
-  --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-  --grid-line: rgba(255, 255, 255, 0.045);
+  --font-body: "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --grid-line: rgba(255, 255, 255, 0.035);
 }
 
 * {
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
   min-height: 100%;
-  background:
-    radial-gradient(circle at top, rgba(139, 92, 246, 0.14), transparent 32%),
-    linear-gradient(180deg, #12061c 0%, #08050d 52%, #050308 100%);
+  background: #08050d;
   color-scheme: dark;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(255, 79, 216, 0.12), transparent 25%),
-    radial-gradient(circle at 82% 12%, rgba(255, 184, 108, 0.12), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(255, 79, 216, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(255, 184, 108, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 0% 100%, rgba(140, 246, 196, 0.08) 0%, transparent 40%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  z-index: 50;
 }
 
 body::before {
