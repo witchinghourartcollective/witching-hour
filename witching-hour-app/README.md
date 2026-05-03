@@ -57,7 +57,7 @@ npm run start:android
 npm run start:web
 ```
 
-2. In a new terminal, run Electron:
+1. In a new terminal, run Electron:
 
 ```bash
 cd /home/fletchervaughn/code/witching-hour/witching-hour-app/desktop
