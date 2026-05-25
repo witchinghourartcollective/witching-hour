@@ -1,6 +1,7 @@
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
 
@@ -23,6 +24,25 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="talentapp:project_verification"
+          content="ed91cedf6d741dca4fc4a90cf66ca0f0168e69fe983b7bee3c720c4b27dda64c6cfb090d84bc819fc7d436dafc0231ff67fa05adcde7b82f83ff11fc57898f74"
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-D320X54SFF"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-D320X54SFF');
+            gtag('config', 'AW-17701849789');
+          `}
+        </Script>
+      </head>
       <body>
         <header className="site-shell__header">
           <Link href="/" className="site-shell__brand">

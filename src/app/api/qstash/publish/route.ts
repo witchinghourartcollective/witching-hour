@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-export async function POST() {
+function getPublicOrigin(request: Request) {
+  return process.env.APP_PUBLIC_ORIGIN ?? new URL(request.url).origin;
+}
+
+export async function POST(request: Request) {
   const qstashUrl = process.env.QSTASH_URL ?? "https://qstash.upstash.io";
   const qstashToken = process.env.QSTASH_TOKEN;
 
@@ -11,7 +15,7 @@ export async function POST() {
     );
   }
 
-  const destination = "https://witchinghourmac.com/api/qstash/receive";
+  const destination = new URL("/api/qstash/receive", getPublicOrigin(request)).toString();
   const response = await fetch(`${qstashUrl}/v2/publish/${destination}`, {
     method: "POST",
     headers: {
