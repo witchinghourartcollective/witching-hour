@@ -7,11 +7,16 @@ const TARGET_MESSAGES = [
   'destroyTonkeeper is not a function',
   'instance.destroyTonkeeper is not a function',
   'Attempting to use a disconnected port object',
+  'Analytics SDK: TypeError: Failed to fetch',
+  'AnalyticsSDKApiError',
 ] as const
 
 function isKnownExtensionProviderError(value: unknown) {
   if (typeof value === 'string') {
-    return TARGET_MESSAGES.some((message) => value.includes(message))
+    return (
+      TARGET_MESSAGES.some((message) => value.includes(message)) ||
+      value.includes('chrome-extension://')
+    )
   }
 
   if (!(value instanceof Error)) {
@@ -70,7 +75,40 @@ export function DevExtensionErrorFilter() {
     window.addEventListener('error', onError, true)
     window.addEventListener('unhandledrejection', onUnhandledRejection, true)
 
+    const originalConsoleError = window.console.error.bind(window.console)
+    window.console.error = (...args) => {
+      const joined = args
+        .map((arg) => {
+          if (typeof arg === 'string') {
+            return arg
+          }
+
+          if (arg instanceof Error) {
+            return [arg.message, arg.stack].filter(Boolean).join(' ')
+          }
+
+          try {
+            return JSON.stringify(arg)
+          } catch {
+            return ''
+          }
+        })
+        .join(' ')
+
+      if (
+        joined.includes('chrome-extension://') &&
+        (joined.includes('Analytics SDK') ||
+          joined.includes('AnalyticsSDKApiError') ||
+          joined.includes('Failed to fetch'))
+      ) {
+        return
+      }
+
+      originalConsoleError(...args)
+    }
+
     return () => {
+      window.console.error = originalConsoleError
       window.removeEventListener('error', onError, true)
       window.removeEventListener('unhandledrejection', onUnhandledRejection, true)
     }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const STREAM_HOST = "stream.witchinghourmac.com";
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0];
 
   if (host !== STREAM_HOST) {

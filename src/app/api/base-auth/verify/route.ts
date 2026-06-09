@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http, isAddress } from "viem";
 import { base } from "viem/chains";
-import { consumeNonce } from "../shared";
+import {
+  BASE_AUTH_SESSION_COOKIE,
+  consumeNonce,
+  createSessionToken,
+  getSessionCookieOptions,
+  readSessionToken,
+} from "../shared";
 
 const client = createPublicClient({
   chain: base,
@@ -84,11 +90,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
+    const sessionToken = createSessionToken(address);
+    const session = readSessionToken(sessionToken);
+
+    if (!session) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Failed to create a signed session.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const response = NextResponse.json({
       ok: true,
       address,
       verifiedAt: new Date().toISOString(),
     });
+
+    response.cookies.set(
+      BASE_AUTH_SESSION_COOKIE,
+      sessionToken,
+      getSessionCookieOptions(session.expiresAt),
+    );
+
+    return response;
   } catch (error) {
     return NextResponse.json(
       {

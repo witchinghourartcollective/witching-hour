@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" fill="none">
+  <title>Witching Hour WHM Sigil</title>
+  <desc>Solid vector reconstruction of the WHM sigil from the ASCII reference in the repository README.</desc>
+  <rect width="1200" height="1200" fill="transparent"></rect>
+  <path d="M120 320 L360 560
+       M300 220 L520 440
+       M450 120 L600 270
+       M1080 320 L840 560
+       M900 220 L680 440
+       M750 120 L600 270
+       M120 880 L360 640
+       M300 980 L520 760
+       M450 1080 L600 930
+       M1080 880 L840 640
+       M900 980 L680 760
+       M750 1080 L600 930
+       M180 600 L480 600
+       M720 600 L1020 600
+       M600 270 L600 930" stroke="currentColor" stroke-width="56" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+</svg>

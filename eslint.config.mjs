@@ -10,11 +10,19 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     ".next/**",
     "**/.next/**",
+    ".open-next/**",
+    "**/.open-next/**",
+    "node_modules/**",
+    "**/node_modules/**",
     "out/**",
     "build/**",
+    "dist/**",
     "next-env.d.ts",
     "Witching Hour Music/**",
     "witching hour/**",
+    "anchor/**",
+    "my-tac-project/**",
+    "witching-hour-app/**",
   ]),
 ]);
 

@@ -26,11 +26,16 @@ const devExtensionErrorGuard = `
     "destroyTonkeeper is not a function",
     "instance.destroyTonkeeper is not a function",
     "Attempting to use a disconnected port object",
+    "Analytics SDK: TypeError: Failed to fetch",
+    "AnalyticsSDKApiError",
   ];
 
   const isKnownExtensionError = (value) => {
     if (typeof value === "string") {
-      return targetMessages.some((target) => value.includes(target));
+      return (
+        targetMessages.some((target) => value.includes(target)) ||
+        value.includes("chrome-extension://")
+      );
     }
 
     if (!value || typeof value !== "object") return false;
@@ -82,6 +87,32 @@ const devExtensionErrorGuard = `
     },
     true,
   );
+
+  const originalConsoleError = window.console.error.bind(window.console);
+  window.console.error = (...args) => {
+    const joined = args
+      .map((arg) => {
+        if (typeof arg === "string") return arg;
+        if (arg instanceof Error) return [arg.message, arg.stack].filter(Boolean).join(" ");
+        try {
+          return JSON.stringify(arg);
+        } catch {
+          return "";
+        }
+      })
+      .join(" ");
+
+    if (
+      joined.includes("chrome-extension://") &&
+      (joined.includes("Analytics SDK") ||
+        joined.includes("AnalyticsSDKApiError") ||
+        joined.includes("Failed to fetch"))
+    ) {
+      return;
+    }
+
+    originalConsoleError(...args);
+  };
 })();
 `;
 
@@ -103,7 +134,7 @@ export default function RootLayout({
           />
         ) : null}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <DevExtensionErrorFilter />
         <ProvidersBoundary>{children}</ProvidersBoundary>
       </body>

@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "witching-hour-app",
+  "compatibility_date": "2026-05-27",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "witching-hour-app"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "witching-hour-app-opennext-cache"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "app.witchinghourmac.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "stream.witchinghourmac.com",
+      "custom_domain": true
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  }
+}

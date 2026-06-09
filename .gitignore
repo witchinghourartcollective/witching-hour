@@ -81,6 +81,7 @@ Witching Hour Music/
 witching hour/
 my-tac-project/
 witching-hour-app/
+anchor/
 
 # local exports
 whm-export.tar.gz
@@ -88,3 +89,4 @@ whm-export.tar.gz
 # local tool state
 .codex
 .playwright-mcp/
+.env*.local

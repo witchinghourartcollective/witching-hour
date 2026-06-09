@@ -1,11 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { createSiweMessage, generateSiweNonce } from "viem/siwe";
-import { useAccount, usePublicClient, useSignMessage } from "wagmi";
+import { useEffect, useState } from "react";
+import { createSiweMessage } from "viem/siwe";
+import { useAccount, useSignMessage } from "wagmi";
+import { base } from "wagmi/chains";
 
 function formatAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof error.message === "string" &&
+    error.message
+  ) {
+    return error.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "shortMessage" in error &&
+    typeof error.shortMessage === "string" &&
+    error.shortMessage
+  ) {
+    return error.shortMessage;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unexpected SIWE sign-in error.";
+  }
 }
 
 export function SignInWithBasePanel() {
@@ -16,11 +49,64 @@ export function SignInWithBasePanel() {
   const [verifiedAddress, setVerifiedAddress] = useState<string | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const { signMessageAsync } = useSignMessage();
-  const publicClient = usePublicClient();
+
+  async function refreshSession() {
+    const response = await fetch("/api/base-auth/session", {
+      cache: "no-store",
+    });
+    const payload = (await response.json()) as {
+      ok?: boolean;
+      authenticated?: boolean;
+      address?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "Failed to load Base auth session.");
+    }
+
+    if (payload.authenticated && payload.address) {
+      setVerifiedAddress(payload.address);
+      setStatus(`Signed in as ${formatAddress(payload.address)}.`);
+      return;
+    }
+
+    setVerifiedAddress(null);
+  }
+
+  useEffect(() => {
+    if (!isConnected || !address) {
+      setVerifiedAddress(null);
+      setStatus(
+        "Connect a wallet and sign a SIWE message to identify yourself in the Base app.",
+      );
+      return;
+    }
+
+    if (verifiedAddress && verifiedAddress.toLowerCase() !== address.toLowerCase()) {
+      setVerifiedAddress(null);
+      setStatus("Wallet changed. Sign in again to refresh the Base app identity.");
+    }
+  }, [address, isConnected, verifiedAddress]);
+
+  useEffect(() => {
+    if (!isConnected || !address || chainId !== base.id) {
+      return;
+    }
+
+    void refreshSession().catch((error) => {
+      setStatus(getErrorMessage(error));
+    });
+  }, [address, chainId, isConnected]);
 
   async function handleSignIn() {
-    if (!isConnected || !address || !chainId || !publicClient) {
+    if (!isConnected || !address || !chainId) {
       setStatus("Connect your wallet before signing in.");
+      return;
+    }
+
+    if (chainId !== base.id) {
+      setStatus("Switch the connected wallet to Base before signing in.");
       return;
     }
 
@@ -28,32 +114,61 @@ export function SignInWithBasePanel() {
     setVerifiedAddress(null);
 
     try {
-      const nonce = generateSiweNonce();
+      setStatus("Requesting a server nonce...");
+      const nonceResponse = await fetch("/api/base-auth/nonce");
+      const noncePayload = (await nonceResponse.json()) as {
+        ok?: boolean;
+        nonce?: string;
+        chainId?: string;
+        error?: string;
+      };
+
+      if (!nonceResponse.ok || !noncePayload.ok || !noncePayload.nonce) {
+        throw new Error(noncePayload.error || "Failed to issue a SIWE nonce.");
+      }
+
+      const expectedChainId = noncePayload.chainId
+        ? Number.parseInt(noncePayload.chainId, 16)
+        : base.id;
+
       const message = createSiweMessage({
         address,
-        chainId,
+        chainId: expectedChainId,
         domain: window.location.host,
-        nonce,
+        nonce: noncePayload.nonce,
         uri: window.location.origin,
         version: "1",
+        statement: "Sign in to Witching Hour on Base.",
       });
 
       setStatus("Awaiting SIWE signature...");
       const signature = await signMessageAsync({ message });
 
-      setStatus("Verifying the SIWE signature locally...");
-      const valid = await publicClient.verifySiweMessage({ message, signature });
+      setStatus("Verifying the SIWE signature with the app server...");
+      const verifyResponse = await fetch("/api/base-auth/verify", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          address,
+          message,
+          signature,
+        }),
+      });
+      const verifyPayload = (await verifyResponse.json()) as {
+        ok?: boolean;
+        error?: string;
+      };
 
-      if (!valid) {
-        throw new Error("SIWE verification failed.");
+      if (!verifyResponse.ok || !verifyPayload.ok) {
+        throw new Error(verifyPayload.error || "SIWE verification failed.");
       }
 
-      setVerifiedAddress(address);
+      await refreshSession();
       setStatus("SIWE sign-in succeeded.");
     } catch (error) {
-      setStatus(
-        error instanceof Error ? error.message : "Unexpected SIWE sign-in error.",
-      );
+      setStatus(getErrorMessage(error));
     } finally {
       setIsSigningIn(false);
     }
@@ -74,7 +189,7 @@ export function SignInWithBasePanel() {
       <button
         type="button"
         onClick={() => void handleSignIn()}
-        disabled={!isConnected || isSigningIn}
+        disabled={!isConnected || isSigningIn || chainId !== base.id}
         className="mt-6 rounded-full bg-blue-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSigningIn ? "Signing in..." : "Sign in with Ethereum"}
