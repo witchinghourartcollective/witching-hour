@@ -1,0 +1,29 @@
+infrastructure/
+.devcontainer/
+codex/
+demo/
+evolving-cellular-automata/
+hello-arc/
+iot/
+looking-glass-inputs/
+mining-research/
+nano/
+prana-map/
+scp-bytecode-deploy/
+security/
+sigil ascii
+src_BACKUP_1768822571/
+subrepos/
+umbrelos/
+witching-hour/
+witching-hour-app/
+witching-hour-live/
+witching-hour-nft/
+witchinghour-miner/
+xmrig/
+114
+Build
+NEXT_TELEMETRY_DISABLED=1
+branch must not contain merge commits.
+ritual 00002
+upport detected on remote origin. Consider enabling it with:

@@ -11,7 +11,6 @@ const nextConfig = {
   turbopack: {
     root: path.join(__dirname)
   },
-  output: "export",
   images: {
     unoptimized: true
   }

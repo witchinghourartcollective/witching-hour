@@ -1,0 +1,49 @@
+name: Sync Tailscale ACLs
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "infrastructure/headscale/config/acl.hujson"
+      - ".github/workflows/sync-tailscale-acls.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "infrastructure/headscale/config/acl.hujson"
+      - ".github/workflows/sync-tailscale-acls.yml"
+
+jobs:
+  acls:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Fetch version-cache.json
+        uses: actions/cache@v5
+        with:
+          path: ./version-cache.json
+          key: version-cache.json-${{ github.run_id }}
+          restore-keys: |
+            version-cache.json-
+
+      - name: Sync Tailscale ACLs
+        if: github.event_name == 'push'
+        uses: tailscale/gitops-acl-action@v1.5.2
+        with:
+          api-key: ${{ secrets.TS_API_KEY }}
+          tailnet: ${{ secrets.TS_TAILNET }}
+          policy-file: infrastructure/headscale/config/acl.hujson
+          action: apply
+
+      - name: Test Tailscale ACLs
+        if: github.event_name == 'pull_request'
+        uses: tailscale/gitops-acl-action@v1.5.2
+        with:
+          api-key: ${{ secrets.TS_API_KEY }}
+          tailnet: ${{ secrets.TS_TAILNET }}
+          policy-file: infrastructure/headscale/config/acl.hujson
+          action: test

@@ -31,6 +31,7 @@ export const siteConfig: SiteConfig = {
       { href: "/", label: "Archive" },
       { href: "/collection", label: "Collection" },
       { href: "/profile", label: "Profile" },
+      { href: "/account", label: "Account" },
       { href: "/mint", label: "Mint" },
       { href: "/token", label: "Token" },
       { href: "/access", label: "Access" },
