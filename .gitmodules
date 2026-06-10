@@ -1,0 +1,3 @@
+[submodule "policy/agentic-wallet-policy"]
+	path = policy/agentic-wallet-policy
+	url = git@github.com:witchinghourartcollective/agentic-wallet-policy.git
