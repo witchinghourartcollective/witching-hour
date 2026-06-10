@@ -8,6 +8,10 @@ function truncateAddress(address: string) {
 }
 
 function getConnectorLabel(name: string) {
+  if (name.toLowerCase().includes("metamask")) {
+    return "MetaMask";
+  }
+
   if (name.toLowerCase().includes("base")) {
     return "Base Account";
   }

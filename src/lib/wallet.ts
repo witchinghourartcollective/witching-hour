@@ -1,6 +1,6 @@
 import { cookieStorage, createConfig, createStorage, http } from "wagmi";
 import { base } from "wagmi/chains";
-import { baseAccount, injected } from "wagmi/connectors";
+import { baseAccount, injected, metaMask } from "wagmi/connectors";
 import { Attribution } from "ox/erc8021";
 
 const BUILDER_CODE =
@@ -13,6 +13,7 @@ const DATA_SUFFIX = Attribution.toDataSuffix({
 export const config = createConfig({
   chains: [base],
   connectors: [
+    metaMask(),
     injected(),
     baseAccount({
       appName: "Witching Hour",

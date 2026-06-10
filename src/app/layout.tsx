@@ -1,5 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { DevExtensionErrorFilter } from "../components/DevExtensionErrorFilter";
 import { ProvidersBoundary } from "../components/providers/ProvidersBoundary";
 
@@ -137,6 +138,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <DevExtensionErrorFilter />
         <ProvidersBoundary>{children}</ProvidersBoundary>
+        <Analytics />
       </body>
     </html>
   );
