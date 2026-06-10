@@ -33,7 +33,7 @@ This repo is one part of a larger Witching Hour stack:
 
 - Production: `https://witching-hour.pages.dev`
 
-## Local Development
+## Quick Start
 
 ```bash
 npm install
@@ -42,7 +42,24 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-### Tailscale / LAN Development
+## Verify Before Commit
+
+Run these checks before opening a PR:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Development Modes
+
+### Local only
+
+```bash
+npm run dev
+```
+
+### Tailscale / LAN
 
 ```bash
 npm run dev:tail
@@ -50,16 +67,16 @@ npm run dev:tail
 
 Then open `http://<your-ip-or-tailscale-hostname>:3000`.
 
-## Scripts
+## Script Reference
 
 ```bash
-npm run dev
-npm run dev:tail
-npm run lint
-npm run build
-npm run start
-npm run deploy
-npm run supermemory -- "Remember my favorite synths."
+npm run dev            # local dev server
+npm run dev:tail       # dev server on 0.0.0.0:3000 for LAN/Tailscale
+npm run lint           # lint src/**/*.js|jsx|ts|tsx
+npm run build          # production Next.js build
+npm run start          # run production server
+npm run deploy         # deploy static export to Cloudflare Pages
+npm run supermemory -- "Remember my favorite synths."  # optional helper script
 ```
 
 ## Deployment
@@ -97,6 +114,12 @@ npm run deploy
 - keep secrets in `.env.local`
 - `SUPERMEMORY_API_KEY` is required only for the `supermemory` script
 - Base app metadata is defined in `src/app/layout.tsx`
+
+## Troubleshooting
+
+- if `npm run build` fails due to missing env vars, create `.env.local` and add only the keys needed for the feature you touched
+- if `npm run deploy` fails, confirm Cloudflare auth (`wrangler login`) and project access
+- if LAN mode does not load, ensure port `3000` is open on your machine/firewall
 
 ## Design Notes
 
