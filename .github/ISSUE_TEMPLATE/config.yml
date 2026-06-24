@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security coordination
+    url: https://github.com/
+    about: Coordinate sensitive reports privately with a maintainer before sharing exploit details or secret-adjacent information.

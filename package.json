@@ -10,7 +10,8 @@
     "lint": "NEXT_TELEMETRY_DISABLED=1 eslint --ext .js,.jsx,.ts,.tsx src",
     "supermemory": "tsx tools/supermemory.ts",
     "deploy": "npm run deploy:cloudflare",
-    "deploy:cloudflare": "NODE_OPTIONS=--dns-result-order=ipv4first npx wrangler pages deploy out --project-name witching-hour"
+    "deploy:cloudflare": "NODE_OPTIONS=--dns-result-order=ipv4first npx wrangler pages deploy out --project-name witching-hour",
+    "test": "node -e \"console.log(\\\"No automated tests configured yet\\\")\""
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.13",

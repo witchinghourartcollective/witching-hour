@@ -33,6 +33,60 @@ This repo is one part of a larger Witching Hour stack:
 
 - Production: `https://witching-hour.pages.dev`
 
+
+## First-Time Setup
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Fill `.env.local` only with the values needed for your local task. Do not commit `.env.local`, production API tokens, private keys, passwords, or Cloudflare credentials.
+
+### Environment Variables
+
+- `NEXT_PUBLIC_GENESIS_MINT_LIVE`: public browser flag for enabling the genesis mint CTA.
+- `NEXT_PUBLIC_GENESIS_MINT_URL`: public browser URL for the live mint destination.
+- `SUPERMEMORY_API_KEY`: optional local token for `npm run supermemory`.
+- `TEST_LOGIN_EMAIL` / `TEST_LOGIN_PASSWORD`: optional local-only login smoke-test credentials.
+- `QSTASH_URL`, `QSTASH_TOKEN`, `QSTASH_CURRENT_SIGNING_KEY`: optional Upstash QStash settings.
+- `REDIS_URL`, `REDIS_TOKEN`: optional Upstash Redis settings.
+
+Use `.env.example` for placeholders only.
+
+## Verification
+
+Run these before opening or merging a PR:
+
+```bash
+npm run lint
+npm test
+npm run build
+npm run dev
+```
+
+## GitHub Workflow
+
+- Work in feature branches and open pull requests into `main`.
+- Use the PR template and include verification commands plus screenshots for UI changes.
+- Keep `main` protected with required pull request review before merge.
+- Require the GitHub Actions CI checks from `.github/workflows/ci.yml`: `lint`, `test`, and `build`.
+- Keep issues routed through the templates in `.github/ISSUE_TEMPLATE/`.
+
+Repository administrators should complete the production checklist in `.github/SETUP.md`, including repository confirmation, maintainer 2FA, SSH keys, branch protection, required reviews, and required status checks.
+
+## Cloudflare Pages CI/CD
+
+Cloudflare Pages is the deployment target. The GitHub deploy workflow builds the static export in `out/` and deploys it to the `witching-hour` Pages project.
+
+Required GitHub Actions secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Do not store Cloudflare secrets in source files, README examples, issue comments, or PR descriptions.
+
 ## Local Development
 
 ```bash
@@ -56,6 +110,7 @@ Then open `http://<your-ip-or-tailscale-hostname>:3000`.
 npm run dev
 npm run dev:tail
 npm run lint
+npm test
 npm run build
 npm run start
 npm run deploy
