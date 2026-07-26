@@ -21,6 +21,14 @@ export default function Links() {
             YouTube
           </a>
         </li>
+        <li>
+          <a
+            href="https://www.reddit.com/r/HighTechHoodoo/"
+            className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"
+          >
+            Reddit — r/HighTechHoodoo
+          </a>
+        </li>
       </ul>
     </main>
   );

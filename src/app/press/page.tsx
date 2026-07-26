@@ -197,7 +197,8 @@ export default function PressPage() {
 
       <section className="max-w-3xl w-full space-y-4 text-left">
         <h2 className="text-xl font-semibold text-center">Socials / Profiles</h2>
-        <p>Provide Spotify/UnitedMasters, YouTube, Instagram, TikTok, etc., if requested.</p>
+        <p>Provide Spotify/UnitedMasters, YouTube, Instagram, TikTok, Reddit, etc., if requested.</p>
+        <p>Reddit: https://www.reddit.com/r/HighTechHoodoo/</p>
       </section>
 
       <section className="max-w-3xl w-full space-y-4 text-left">
