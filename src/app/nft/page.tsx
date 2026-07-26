@@ -43,6 +43,20 @@ export default function NftPage() {
           >
             Read Litepaper
           </a>
+          <a
+            className="rounded-md border border-white/20 px-4 py-2"
+            href="https://base.app/content/EkUKQwoVbmV0d29ya3MvYmFzZS1tYWlubmV0EioweDY5ZGJmYzk0NGZmZjdjNjhkYTFkMjRmZTBjNjUxNDM1NWE4MzI1ODU"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() =>
+              track("cta_click", {
+                location: "nft_page",
+                state: "base_app",
+              })
+            }
+          >
+            View on Base.app
+          </a>
         </div>
       </section>
 

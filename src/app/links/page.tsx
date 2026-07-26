@@ -21,6 +21,16 @@ export default function Links() {
             YouTube
           </a>
         </li>
+        <li>
+          <a
+            href="https://base.app/content/EkUKQwoVbmV0d29ya3MvYmFzZS1tYWlubmV0EioweDY5ZGJmYzk0NGZmZjdjNjhkYTFkMjRmZTBjNjUxNDM1NWE4MzI1ODU"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"
+          >
+            Base.app
+          </a>
+        </li>
       </ul>
     </main>
   );
