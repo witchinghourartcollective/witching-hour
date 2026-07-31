@@ -1,3 +1,5 @@
+import { BASE_APP_COLLECTION_URL } from "@/lib/urls";
+
 export default function Links() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-8 px-6 text-center">
@@ -23,7 +25,7 @@ export default function Links() {
         </li>
         <li>
           <a
-            href="https://base.app/content/EkUKQwoVbmV0d29ya3MvYmFzZS1tYWlubmV0EioweDY5ZGJmYzk0NGZmZjdjNjhkYTFkMjRmZTBjNjUxNDM1NWE4MzI1ODU"
+            href={BASE_APP_COLLECTION_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"

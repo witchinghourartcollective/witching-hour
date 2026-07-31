@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@/lib/track";
+import { BASE_APP_COLLECTION_URL } from "@/lib/urls";
 
 export default function NftPage() {
   return (
@@ -45,7 +46,7 @@ export default function NftPage() {
           </a>
           <a
             className="rounded-md border border-white/20 px-4 py-2"
-            href="https://base.app/content/EkUKQwoVbmV0d29ya3MvYmFzZS1tYWlubmV0EioweDY5ZGJmYzk0NGZmZjdjNjhkYTFkMjRmZTBjNjUxNDM1NWE4MzI1ODU"
+            href={BASE_APP_COLLECTION_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() =>
