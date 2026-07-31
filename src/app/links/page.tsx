@@ -46,7 +46,7 @@ export default function Links() {
           </li>
           <li>
             <a
-              href="https://basescan.org"
+              href="https://basescan.org/address/0xE435CcAE52D1a66D3Bd667EFf684923D845ffaDd"
               className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"
               target="_blank"
               rel="noopener noreferrer"
