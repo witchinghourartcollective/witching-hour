@@ -1,3 +1,5 @@
+import { BASE_APP_COLLECTION_URL } from "@/lib/urls";
+
 export default function Links() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-8 px-6 text-center">
@@ -27,6 +29,16 @@ export default function Links() {
             className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"
           >
             Reddit — r/HighTechHoodoo
+          </a>
+        </li>
+        <li>
+          <a
+            href={BASE_APP_COLLECTION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-[#c7a24b] underline-offset-4 hover:opacity-90"
+          >
+            Base.app
           </a>
         </li>
       </ul>

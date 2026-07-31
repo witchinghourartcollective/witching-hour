@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@/lib/track";
+import { BASE_APP_COLLECTION_URL } from "@/lib/urls";
 
 export default function NftPage() {
   return (
@@ -42,6 +43,20 @@ export default function NftPage() {
             }
           >
             Read Litepaper
+          </a>
+          <a
+            className="rounded-md border border-white/20 px-4 py-2"
+            href={BASE_APP_COLLECTION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() =>
+              track("cta_click", {
+                location: "nft_page",
+                state: "base_app",
+              })
+            }
+          >
+            View on Base.app
           </a>
         </div>
       </section>
